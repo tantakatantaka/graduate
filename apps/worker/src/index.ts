@@ -4,14 +4,14 @@ import { execSync } from "child_process";
 
 console.log("🤖 Worker 起動:", new Date().toLocaleString("ja-JP"));
 
-// 毎日 8:00 と 20:00 にRSS収集
-cron.schedule("0 8,20 * * *", () => {
+// 毎日 5:00 にRSS収集
+cron.schedule("0 5 * * *", () => {
   console.log("⏰ RSS収集ジョブ実行");
   execSync("pnpm collect", { stdio: "inherit" });
 });
 
-// 毎日 21:00 に日次スナップショット生成（夜間収集後）
-cron.schedule("0 21 * * *", () => {
+// 毎日 6:00 に日次スナップショット生成（収集完了後）
+cron.schedule("0 6 * * *", () => {
   console.log("⏰ 日次スナップショット生成ジョブ実行");
   execSync("pnpm snapshot", { stdio: "inherit" });
 });
