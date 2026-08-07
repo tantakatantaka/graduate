@@ -50,12 +50,12 @@ export default async function DashboardPage() {
       {/* 週次AIサマリー */}
       {summary && <WeeklySummaryBanner summary={summary} />}
 
-      {/* メイン企業（Applied Materials） */}
       {(() => {
         const main = companies.filter((c) => c.role === "main");
         const subs = companies.filter((c) => c.role !== "main");
         return (
           <>
+            {/* ① メイン企業 */}
             {main.length > 0 && (
               <section>
                 <h2 className="text-slate-400 text-sm font-medium uppercase tracking-wider mb-3">
@@ -69,11 +69,25 @@ export default async function DashboardPage() {
               </section>
             )}
 
+            {/* ② 業界ニュースフィード */}
+            <section>
+              <h2 className="text-slate-400 text-sm font-medium uppercase tracking-wider mb-3">
+                業界ニュースフィード
+              </h2>
+              <ArticleFeed
+                articles={articles.map((a) => ({
+                  ...a,
+                  companies: a.companies.map((ac) => ac.company),
+                }))}
+              />
+            </section>
+
+            {/* ③ サブ企業 */}
             <section>
               <h2 className="text-slate-400 text-sm font-medium uppercase tracking-wider mb-3">
                 サブ企業
               </h2>
-              {companies.length === 0 ? (
+              {subs.length === 0 ? (
                 <div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-center text-slate-500">
                   <p className="text-lg mb-2">企業データがありません</p>
                   <p className="text-sm">
@@ -94,19 +108,6 @@ export default async function DashboardPage() {
           </>
         );
       })()}
-
-      {/* 業界全体フィード */}
-      <section>
-        <h2 className="text-slate-400 text-sm font-medium uppercase tracking-wider mb-4">
-          業界ニュースフィード
-        </h2>
-        <ArticleFeed
-          articles={articles.map((a) => ({
-            ...a,
-            companies: a.companies.map((ac) => ac.company),
-          }))}
-        />
-      </section>
     </div>
   );
 }
