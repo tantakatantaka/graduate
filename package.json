@@ -1,0 +1,17 @@
+{
+  "name": "semiconductor-dashboard",
+  "private": true,
+  "version": "0.0.1",
+  "packageManager": "pnpm@11.20.0",
+  "scripts": {
+    "dev": "pnpm --parallel --filter=web --filter=worker dev",
+    "build": "pnpm --filter=db build && pnpm --filter=web --filter=worker build",
+    "db:generate": "pnpm --filter=db generate",
+    "db:push": "pnpm --filter=db db:push",
+    "db:studio": "pnpm --filter=db studio"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}
