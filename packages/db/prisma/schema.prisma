@@ -13,6 +13,7 @@ model Company {
   name        String
   nameJa      String?
   ticker      String      @unique
+  role        String      @default("sub") // "main" | "sub"
   description String?
   logoUrl     String?
   keywords    String[]    // マッチング用キーワード（企業名・ティッカー・別名）

@@ -15,10 +15,12 @@ async function ensureCompaniesExist() {
         name: company.name,
         nameJa: company.nameJa,
         ticker: company.ticker,
+        role: company.role,
         description: company.description,
         keywords: company.keywords as unknown as string[],
       },
       update: {
+        role: company.role,
         keywords: company.keywords as unknown as string[],
       },
     });

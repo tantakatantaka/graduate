@@ -25,8 +25,10 @@ const CATEGORY_COLOR: Record<string, string> = {
 
 export default function CompanyCard({
   company,
+  isMain = false,
 }: {
   company: CompanyWithRelations;
+  isMain?: boolean;
 }) {
   const latestStock = company.stockData[0];
   const previousStock = company.stockData[1];
@@ -36,22 +38,42 @@ export default function CompanyCard({
       : null;
 
   const isPositive = changePercent !== null && changePercent >= 0;
+  const articleLimit = isMain ? 5 : 3;
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 hover:border-slate-700 transition-colors">
+    <div
+      className={`rounded-xl border p-4 hover:border-opacity-80 transition-colors ${
+        isMain
+          ? "border-blue-500/40 bg-blue-950/20 hover:border-blue-500/60"
+          : "border-slate-800 bg-slate-900 hover:border-slate-700"
+      }`}
+    >
       {/* ヘッダー */}
       <div className="flex items-start justify-between mb-3">
-        <div>
-          <p className="text-xs text-slate-500 font-mono">{company.ticker}</p>
-          <h3 className="font-semibold text-white">{company.name}</h3>
-          {company.nameJa && (
-            <p className="text-xs text-slate-500">{company.nameJa}</p>
+        <div className="flex items-start gap-2">
+          {isMain && (
+            <span className="mt-0.5 shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 font-medium">
+              MAIN
+            </span>
           )}
+          <div>
+            <p className="text-xs text-slate-500 font-mono">{company.ticker}</p>
+            <h3 className={`font-semibold text-white ${isMain ? "text-base" : "text-sm"}`}>
+              {company.name}
+            </h3>
+            {company.nameJa && (
+              <p className="text-xs text-slate-500">{company.nameJa}</p>
+            )}
+            {isMain && company.description && (
+              <p className="text-xs text-slate-500 mt-0.5">{company.description}</p>
+            )}
+          </div>
         </div>
+
         {/* 株価 */}
         {latestStock && (
-          <div className="text-right">
-            <p className="text-sm font-mono text-white">
+          <div className="text-right shrink-0">
+            <p className={`font-mono text-white ${isMain ? "text-base" : "text-sm"}`}>
               ${latestStock.close.toFixed(2)}
             </p>
             {changePercent !== null && (
@@ -71,7 +93,7 @@ export default function CompanyCard({
         {company.articles.length === 0 ? (
           <p className="text-xs text-slate-600">記事なし</p>
         ) : (
-          company.articles.slice(0, 3).map((ac) => (
+          company.articles.slice(0, articleLimit).map((ac) => (
             <a
               key={ac.article.id}
               href={ac.article.url}
@@ -90,6 +112,11 @@ export default function CompanyCard({
                 <p className="text-xs text-slate-400 group-hover:text-slate-200 transition-colors line-clamp-2 leading-relaxed">
                   {ac.article.title}
                 </p>
+                {isMain && ac.article.summary && (
+                  <p className="text-xs text-slate-600 line-clamp-1 mt-0.5 hidden sm:block">
+                    {ac.article.summary}
+                  </p>
+                )}
               </div>
             </a>
           ))

@@ -50,29 +50,50 @@ export default async function DashboardPage() {
       {/* 週次AIサマリー */}
       {summary && <WeeklySummaryBanner summary={summary} />}
 
-      {/* 企業カードグリッド */}
-      <section>
-        <h2 className="text-slate-400 text-sm font-medium uppercase tracking-wider mb-4">
-          追跡企業
-        </h2>
-        {companies.length === 0 ? (
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-center text-slate-500">
-            <p className="text-lg mb-2">企業データがありません</p>
-            <p className="text-sm">
-              <code className="bg-slate-800 px-2 py-1 rounded">
-                pnpm collect
-              </code>{" "}
-              を実行してデータを収集してください
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {companies.map((company) => (
-              <CompanyCard key={company.id} company={company} />
-            ))}
-          </div>
-        )}
-      </section>
+      {/* メイン企業（Applied Materials） */}
+      {(() => {
+        const main = companies.filter((c) => c.role === "main");
+        const subs = companies.filter((c) => c.role !== "main");
+        return (
+          <>
+            {main.length > 0 && (
+              <section>
+                <h2 className="text-slate-400 text-sm font-medium uppercase tracking-wider mb-3">
+                  メイン企業
+                </h2>
+                <div className="grid grid-cols-1 gap-4">
+                  {main.map((company) => (
+                    <CompanyCard key={company.id} company={company} isMain />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            <section>
+              <h2 className="text-slate-400 text-sm font-medium uppercase tracking-wider mb-3">
+                サブ企業
+              </h2>
+              {companies.length === 0 ? (
+                <div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-center text-slate-500">
+                  <p className="text-lg mb-2">企業データがありません</p>
+                  <p className="text-sm">
+                    <code className="bg-slate-800 px-2 py-1 rounded">
+                      pnpm collect
+                    </code>{" "}
+                    を実行してデータを収集してください
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {subs.map((company) => (
+                    <CompanyCard key={company.id} company={company} />
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
+        );
+      })()}
 
       {/* 業界全体フィード */}
       <section>
