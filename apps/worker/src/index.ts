@@ -10,6 +10,12 @@ cron.schedule("0 8,20 * * *", () => {
   execSync("pnpm collect", { stdio: "inherit" });
 });
 
+// 毎日 21:00 に日次スナップショット生成（夜間収集後）
+cron.schedule("0 21 * * *", () => {
+  console.log("⏰ 日次スナップショット生成ジョブ実行");
+  execSync("pnpm snapshot", { stdio: "inherit" });
+});
+
 // 毎週月曜 9:00 に週次サマリー生成
 cron.schedule("0 9 * * 1", () => {
   console.log("⏰ 週次サマリー生成ジョブ実行");

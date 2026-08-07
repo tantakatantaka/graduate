@@ -22,9 +22,20 @@ export default function RootLayout({
             <h1 className="text-lg font-semibold text-white">
               半導体インテリジェンス
             </h1>
-            <span className="text-slate-500 text-sm ml-auto">
-              業界情報ダッシュボード
-            </span>
+            <nav className="ml-auto flex items-center gap-4">
+              <a
+                href="/"
+                className="text-sm text-slate-400 hover:text-white transition-colors"
+              >
+                ダッシュボード
+              </a>
+              <a
+                href="/archive"
+                className="text-sm text-slate-400 hover:text-white transition-colors"
+              >
+                アーカイブ
+              </a>
+            </nav>
           </div>
         </header>
         <main className="max-w-7xl mx-auto px-4 py-8">{children}</main>

@@ -68,3 +68,18 @@ model WeeklySummary {
   weekOf    DateTime @db.Date @unique
   createdAt DateTime @default(now())
 }
+
+// 毎日のダッシュボード状態スナップショット
+model DailySnapshot {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date @unique
+  // その日の業界全体サマリー（AI生成）
+  summary   String
+  // 企業ごとの状態（株価・記事数・注目記事）をJSONで保存
+  companies Json
+  // その日に収集した記事の総数
+  articleCount Int   @default(0)
+  // その日の注目記事トップ5（タイトル・URL・カテゴリ）をJSONで保存
+  topArticles  Json
+  createdAt DateTime @default(now())
+}
