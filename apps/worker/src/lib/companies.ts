@@ -20,8 +20,8 @@ export const COMPANIES = [
     nameJa: "台湾積体電路製造",
     ticker: "TSM",
     role: "sub" as const,
-    keywords: ["TSMC", "TSM", "台湾積体電路", "台積電"],
-    description: "世界最大の半導体受託製造企業",
+    keywords: ["TSMC", "TSM", "台湾積体電路", "台積電", "JASM", "ジャスム", "Japan Advanced Semiconductor Manufacturing"],
+    description: "世界最大の半導体受託製造企業（日本子会社JASM含む）",
   },
   {
     name: "Kioxia",
