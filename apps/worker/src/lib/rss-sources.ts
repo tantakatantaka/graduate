@@ -2,12 +2,12 @@
 export const RSS_SOURCES = [
   {
     name: "EE Times Japan",
-    url: "https://eetimes.itmedia.co.jp/rss/eetj.xml",
+    url: "https://rss.itmedia.co.jp/rss/2.0/ee_latest.xml",
     lang: "ja",
   },
   {
-    name: "Nikkei Tech",
-    url: "https://www.nikkei.com/rss/newsCategoryList.do?category=industry",
+    name: "日経ビジネス",
+    url: "https://business.nikkei.com/rss/sns/nb.rdf",
     lang: "ja",
   },
   {
@@ -18,11 +18,6 @@ export const RSS_SOURCES = [
   {
     name: "SemiEngineering",
     url: "https://semiengineering.com/feed/",
-    lang: "en",
-  },
-  {
-    name: "AnandTech",
-    url: "https://www.anandtech.com/rss/",
     lang: "en",
   },
   {
