@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ja" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>半導体インテリジェンス — モックアップ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            slate: {
+              950: '#0a0f1e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', 'Noto Sans JP', system-ui, sans-serif; }
+    .line-clamp-1 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
+    .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/90 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">半</div>
+      <span class="font-semibold text-white">半導体インテリジェンス</span>
+      <div class="ml-auto flex items-center gap-6">
+        <span class="text-sm text-blue-400 border-b border-blue-400 pb-0.5">ダッシュボード</span>
+        <span class="text-sm text-slate-500 hover:text-slate-300 cursor-pointer">アーカイブ</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-8 space-y-8">
+
+    <!-- Daily + Weekly AI Summary (2-column) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+      <!-- 今日のポイント（日次・毎日更新） -->
+      <div class="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-semibold text-emerald-400">今日のポイント</span>
+            <span class="text-xs text-emerald-600">8月8日 · 24件収集</span>
+          </div>
+          <button class="text-xs text-emerald-500">閉じる ▲</button>
+        </div>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          AMATがTSMC向けEUV対応装置の共同開発を発表し、装置セクター全体に買いが広がった。マイクロンのQ3決算はHBM需要の急拡大で過去最高益を更新。ラピダスへの政府追加補助金3,000億円も正式決定し、国内半導体エコシステムへの期待が高まっている。
+        </p>
+      </div>
+
+      <!-- 今週の動向（週次・月曜固定） -->
+      <div class="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-semibold text-blue-300">今週の動向</span>
+            <span class="text-xs text-blue-500">8月4日週</span>
+          </div>
+          <button class="text-xs text-blue-400">展開 ▼</button>
+        </div>
+        <p class="text-sm text-slate-400 leading-relaxed line-clamp-2">
+          今週はApplied Materialsの好調な決算発表が市場の注目を集めた。AI半導体向け製造装置の需要拡大を背景に売上高は前年比18%増を達成。JASMの熊本第2工場着工も確認され、国内サプライチェーン整備が加速している。
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Main company: AMAT -->
+    <section>
+      <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">メイン企業</h2>
+      <div class="rounded-xl border border-blue-500/40 bg-blue-950/15 p-5">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-start gap-3">
+            <span class="mt-0.5 text-[10px] font-semibold px-2 py-0.5 rounded border border-blue-500/40 bg-blue-500/15 text-blue-300">MAIN</span>
+            <div>
+              <p class="text-[11px] font-mono text-slate-500">AMAT</p>
+              <h3 class="text-lg font-semibold text-white">Applied Materials</h3>
+              <p class="text-xs text-slate-400">アプライドマテリアルズ — 半導体製造装置・材料の世界最大手</p>
+            </div>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <p class="text-lg font-mono font-semibold text-white">$185.40</p>
+            <p class="text-xs font-mono text-green-400">+1.23%</p>
+          </div>
+        </div>
+        <hr class="border-slate-700/50 mb-4" />
+        <div class="space-y-3">
+          <div class="flex items-start gap-2">
+            <span class="mt-1.5 w-2 h-2 rounded-full bg-rose-400 flex-shrink-0"></span>
+            <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-purple-500/30 bg-purple-500/15 text-purple-300 flex-shrink-0">決算</span>
+            <p class="text-xs text-slate-400 leading-relaxed">Applied Materials、Q3売上高 $7.2B — 市場予想を上回る好決算</p>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="mt-1.5 w-2 h-2 rounded-full bg-rose-400 flex-shrink-0"></span>
+            <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-blue-500/30 bg-blue-500/15 text-blue-300 flex-shrink-0">技術</span>
+            <p class="text-xs text-slate-400 leading-relaxed">次世代GAA（ゲート・オール・アラウンド）向けCVD装置を正式発表</p>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="mt-1.5 w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0"></span>
+            <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-orange-500/30 bg-orange-500/15 text-orange-300 flex-shrink-0">規制</span>
+            <p class="text-xs text-slate-400 leading-relaxed">中国向け輸出規制の影響額を四半期報告書に開示、売上の約12%</p>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="mt-1.5 w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0"></span>
+            <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-blue-500/30 bg-blue-500/15 text-blue-300 flex-shrink-0">技術</span>
+            <p class="text-xs text-slate-400 leading-relaxed">原子層エッチング（ALE）装置の第3世代モデル、量産出荷開始</p>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="mt-1.5 w-2 h-2 rounded-full bg-slate-600 flex-shrink-0"></span>
+            <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-green-500/30 bg-green-500/15 text-green-300 flex-shrink-0">M&A</span>
+            <p class="text-xs text-slate-400 leading-relaxed">欧州の半導体材料スタートアップへの戦略的出資を発表</p>
+          </div>
+        </div>
+        <hr class="border-slate-700/50 mt-4 mb-3" />
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-slate-600">24件のニュース</span>
+          <span class="text-xs text-blue-400 cursor-pointer">詳細を見る →</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Industry Feed -->
+    <section>
+      <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">業界ニュースフィード</h2>
+      <div class="space-y-2">
+
+        <!-- feed items -->
+        <div class="flex items-start gap-3 rounded-lg border border-slate-800 bg-slate-900 p-3 hover:border-slate-700 transition-colors cursor-pointer">
+          <span class="mt-1.5 w-2 h-2 rounded-full bg-rose-400 flex-shrink-0"></span>
+          <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-blue-500/30 bg-blue-500/15 text-blue-300 flex-shrink-0">技術</span>
+          <div class="flex gap-1 flex-shrink-0">
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">AMAT</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">TSM</span>
+          </div>
+          <p class="text-xs text-slate-300 flex-1 min-w-0 leading-relaxed line-clamp-1">AMATがTSMC向けEUV対応次世代装置を共同開発と発表</p>
+          <div class="text-right flex-shrink-0">
+            <p class="text-xs text-slate-500">8/8</p>
+            <p class="text-[10px] text-slate-600">EE Times</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 rounded-lg border border-slate-800 bg-slate-900 p-3 hover:border-slate-700 transition-colors cursor-pointer">
+          <span class="mt-1.5 w-2 h-2 rounded-full bg-rose-400 flex-shrink-0"></span>
+          <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-purple-500/30 bg-purple-500/15 text-purple-300 flex-shrink-0">決算</span>
+          <div class="flex gap-1 flex-shrink-0">
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">MU</span>
+          </div>
+          <p class="text-xs text-slate-300 flex-1 min-w-0 leading-relaxed line-clamp-1">マイクロンQ3決算、HBM需要急拡大で過去最高益を更新</p>
+          <div class="text-right flex-shrink-0">
+            <p class="text-xs text-slate-500">8/7</p>
+            <p class="text-[10px] text-slate-600">Nikkei</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 rounded-lg border border-slate-800 bg-slate-900 p-3 hover:border-slate-700 transition-colors cursor-pointer">
+          <span class="mt-1.5 w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0"></span>
+          <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-orange-500/30 bg-orange-500/15 text-orange-300 flex-shrink-0">規制</span>
+          <div class="flex gap-1 flex-shrink-0">
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">RAPIDUS</span>
+          </div>
+          <p class="text-xs text-slate-300 flex-1 min-w-0 leading-relaxed line-clamp-1">経産省がラピダスに追加補助金3,000億円を交付決定</p>
+          <div class="text-right flex-shrink-0">
+            <p class="text-xs text-slate-500">8/6</p>
+            <p class="text-[10px] text-slate-600">日経</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 rounded-lg border border-slate-800 bg-slate-900 p-3 hover:border-slate-700 transition-colors cursor-pointer">
+          <span class="mt-1.5 w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0"></span>
+          <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-blue-500/30 bg-blue-500/15 text-blue-300 flex-shrink-0">技術</span>
+          <div class="flex gap-1 flex-shrink-0">
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">AMAT</span>
+          </div>
+          <p class="text-xs text-slate-300 flex-1 min-w-0 leading-relaxed line-clamp-1">ALD装置の新世代モデルがベンチマーク最速を更新</p>
+          <div class="text-right flex-shrink-0">
+            <p class="text-xs text-slate-500">8/6</p>
+            <p class="text-[10px] text-slate-600">SemiEng</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 rounded-lg border border-slate-800 bg-slate-900 p-3 hover:border-slate-700 transition-colors cursor-pointer">
+          <span class="mt-1.5 w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0"></span>
+          <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-blue-500/30 bg-blue-500/15 text-blue-300 flex-shrink-0">技術</span>
+          <div class="flex gap-1 flex-shrink-0">
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">KIOXIA</span>
+          </div>
+          <p class="text-xs text-slate-300 flex-1 min-w-0 leading-relaxed line-clamp-1">キオクシア、BiCS8 NANDフラッシュの量産を正式開始</p>
+          <div class="text-right flex-shrink-0">
+            <p class="text-xs text-slate-500">8/5</p>
+            <p class="text-[10px] text-slate-600">EE Times</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 rounded-lg border border-slate-800 bg-slate-900 p-3 hover:border-slate-700 transition-colors cursor-pointer">
+          <span class="mt-1.5 w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0"></span>
+          <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-green-500/30 bg-green-500/15 text-green-300 flex-shrink-0">M&A</span>
+          <div class="flex gap-1 flex-shrink-0">
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">TSM</span>
+          </div>
+          <p class="text-xs text-slate-300 flex-1 min-w-0 leading-relaxed line-clamp-1">JASM、熊本第3工場の建設計画が浮上 — 2027年着工へ</p>
+          <div class="text-right flex-shrink-0">
+            <p class="text-xs text-slate-500">8/5</p>
+            <p class="text-[10px] text-slate-600">Reuters</p>
+          </div>
+        </div>
+
+      </div>
+      <div class="mt-3 text-right">
+        <span class="text-xs text-blue-400 cursor-pointer">もっと見る →</span>
+      </div>
+    </section>
+
+    <!-- Sub companies -->
+    <section>
+      <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">サブ企業</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+        <!-- TSMC -->
+        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <p class="text-[11px] font-mono text-slate-500">TSM</p>
+              <h3 class="text-sm font-semibold text-white">TSMC / JASM</h3>
+              <p class="text-xs text-slate-500">台湾積体電路製造</p>
+            </div>
+          </div>
+          <hr class="border-slate-800 mb-3" />
+          <div class="space-y-2">
+            <div class="flex items-start gap-2">
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-blue-500/30 bg-blue-500/15 text-blue-300 flex-shrink-0">技術</span>
+              <p class="text-xs text-slate-400 line-clamp-1 leading-relaxed">N2量産ラインが順調に稼働、歩留まり改善</p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-orange-500/30 bg-orange-500/15 text-orange-300 flex-shrink-0">規制</span>
+              <p class="text-xs text-slate-400 line-clamp-1 leading-relaxed">JASM熊本第2期工事、2024年末着工へ</p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-green-500/30 bg-green-500/15 text-green-300 flex-shrink-0">M&A</span>
+              <p class="text-xs text-slate-400 line-clamp-1 leading-relaxed">CoWoS先進パッケージ増産に向け投資拡大</p>
+            </div>
+          </div>
+          <hr class="border-slate-800 mt-3 mb-2" />
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-600">18件のニュース</span>
+            <span class="text-xs text-blue-400">詳細 →</span>
+          </div>
+        </div>
+
+        <!-- Kioxia -->
+        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <p class="text-[11px] font-mono text-slate-500">KIOXIA</p>
+              <h3 class="text-sm font-semibold text-white">Kioxia</h3>
+              <p class="text-xs text-slate-500">キオクシア</p>
+            </div>
+          </div>
+          <hr class="border-slate-800 mb-3" />
+          <div class="space-y-2">
+            <div class="flex items-start gap-2">
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-blue-500/30 bg-blue-500/15 text-blue-300 flex-shrink-0">技術</span>
+              <p class="text-xs text-slate-400 line-clamp-1 leading-relaxed">BiCS8 NANDフラッシュの量産開始</p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-purple-500/30 bg-purple-500/15 text-purple-300 flex-shrink-0">決算</span>
+              <p class="text-xs text-slate-400 line-clamp-1 leading-relaxed">売上高が回復基調、黒字転換を見込む</p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-green-500/30 bg-green-500/15 text-green-300 flex-shrink-0">M&A</span>
+              <p class="text-xs text-slate-400 line-clamp-1 leading-relaxed">WDとの経営統合交渉が継続中</p>
+            </div>
+          </div>
+          <hr class="border-slate-800 mt-3 mb-2" />
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-600">9件のニュース</span>
+            <span class="text-xs text-blue-400">詳細 →</span>
+          </div>
+        </div>
+
+        <!-- Rapidus -->
+        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <p class="text-[11px] font-mono text-slate-500">RAPIDUS</p>
+              <h3 class="text-sm font-semibold text-white">Rapidus</h3>
+              <p class="text-xs text-slate-500">ラピダス</p>
+            </div>
+          </div>
+          <hr class="border-slate-800 mb-3" />
+          <div class="space-y-2">
+            <div class="flex items-start gap-2">
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-blue-500/30 bg-blue-500/15 text-blue-300 flex-shrink-0">技術</span>
+              <p class="text-xs text-slate-400 line-clamp-1 leading-relaxed">2nmプロセスの試作チップ製造に成功</p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-orange-500/30 bg-orange-500/15 text-orange-300 flex-shrink-0">規制</span>
+              <p class="text-xs text-slate-400 line-clamp-1 leading-relaxed">政府からの追加補助金3,000億円を取得</p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-blue-500/30 bg-blue-500/15 text-blue-300 flex-shrink-0">技術</span>
+              <p class="text-xs text-slate-400 line-clamp-1 leading-relaxed">IBMとのプロセス開発提携を継続</p>
+            </div>
+          </div>
+          <hr class="border-slate-800 mt-3 mb-2" />
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-600">11件のニュース</span>
+            <span class="text-xs text-blue-400">詳細 →</span>
+          </div>
+        </div>
+
+        <!-- Micron -->
+        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <p class="text-[11px] font-mono text-slate-500">MU</p>
+              <h3 class="text-sm font-semibold text-white">Micron</h3>
+              <p class="text-xs text-slate-500">マイクロン</p>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-mono font-semibold text-white">$98.40</p>
+              <p class="text-xs font-mono text-green-400">+0.82%</p>
+            </div>
+          </div>
+          <hr class="border-slate-800 mb-3" />
+          <div class="space-y-2">
+            <div class="flex items-start gap-2">
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-blue-500/30 bg-blue-500/15 text-blue-300 flex-shrink-0">技術</span>
+              <p class="text-xs text-slate-400 line-clamp-1 leading-relaxed">HBM4の量産を予定より早期に開始</p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-purple-500/30 bg-purple-500/15 text-purple-300 flex-shrink-0">決算</span>
+              <p class="text-xs text-slate-400 line-clamp-1 leading-relaxed">Q3決算、HBM需要で過去最高益を更新</p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-orange-500/30 bg-orange-500/15 text-orange-300 flex-shrink-0">規制</span>
+              <p class="text-xs text-slate-400 line-clamp-1 leading-relaxed">中国工場の操業継続に不透明感</p>
+            </div>
+          </div>
+          <hr class="border-slate-800 mt-3 mb-2" />
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-600">7件のニュース</span>
+            <span class="text-xs text-blue-400">詳細 →</span>
+          </div>
+        </div>
+
+        <!-- Sony SC -->
+        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <p class="text-[11px] font-mono text-slate-500">SONY-SC</p>
+              <h3 class="text-sm font-semibold text-white">Sony Semiconductor</h3>
+              <p class="text-xs text-slate-500">ソニーセミコンダクター</p>
+            </div>
+          </div>
+          <hr class="border-slate-800 mb-3" />
+          <div class="space-y-2">
+            <div class="flex items-start gap-2">
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-blue-500/30 bg-blue-500/15 text-blue-300 flex-shrink-0">技術</span>
+              <p class="text-xs text-slate-400 line-clamp-1 leading-relaxed">積層型CMOSイメージセンサーの新世代発表</p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-blue-500/30 bg-blue-500/15 text-blue-300 flex-shrink-0">技術</span>
+              <p class="text-xs text-slate-400 line-clamp-1 leading-relaxed">車載向け高感度センサーの量産開始</p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-blue-500/30 bg-blue-500/15 text-blue-300 flex-shrink-0">技術</span>
+              <p class="text-xs text-slate-400 line-clamp-1 leading-relaxed">LiDAR向けSPADセンサーを開発発表</p>
+            </div>
+          </div>
+          <hr class="border-slate-800 mt-3 mb-2" />
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-600">6件のニュース</span>
+            <span class="text-xs text-blue-400">詳細 →</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Legend -->
+    <div class="flex items-center gap-5 pt-2 pb-4">
+      <span class="text-xs text-slate-600">重要度：</span>
+      <div class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-rose-400 inline-block"></span>
+        <span class="text-xs text-slate-500">高 (High)</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-yellow-400 inline-block"></span>
+        <span class="text-xs text-slate-500">中 (Medium)</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-slate-600 inline-block"></span>
+        <span class="text-xs text-slate-500">低 (Low)</span>
+      </div>
+    </div>
+
+  </main>
+</body>
+</html>

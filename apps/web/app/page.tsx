@@ -26,6 +26,13 @@ async function getLatestSummary() {
   return prisma.weeklySummary.findFirst({ orderBy: { weekOf: "desc" } });
 }
 
+async function getLatestDailySnapshot() {
+  return prisma.dailySnapshot.findFirst({
+    orderBy: { date: "desc" },
+    select: { summary: true, date: true, articleCount: true },
+  });
+}
+
 async function getLatestArticles() {
   return prisma.article.findMany({
     orderBy: { publishedAt: "desc" },
@@ -39,16 +46,19 @@ async function getLatestArticles() {
 }
 
 export default async function DashboardPage() {
-  const [companies, summary, articles] = await Promise.all([
+  const [companies, summary, dailySnapshot, articles] = await Promise.all([
     getCompanies(),
     getLatestSummary(),
+    getLatestDailySnapshot(),
     getLatestArticles(),
   ]);
 
   return (
     <div className="space-y-8">
-      {/* 週次AIサマリー */}
-      {summary && <WeeklySummaryBanner summary={summary} />}
+      {/* 日次＋週次AIサマリー */}
+      {(dailySnapshot || summary) && (
+        <WeeklySummaryBanner daily={dailySnapshot} weekly={summary} />
+      )}
 
       {(() => {
         const main = companies.filter((c) => c.role === "main");

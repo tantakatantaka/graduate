@@ -3,41 +3,85 @@
 import { useState } from "react";
 import { WeeklySummary } from "@prisma/client";
 
-export default function WeeklySummaryBanner({
-  summary,
-}: {
-  summary: WeeklySummary;
-}) {
-  const [expanded, setExpanded] = useState(false);
-  const weekOf = new Date(summary.weekOf).toLocaleDateString("ja-JP", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+type DailyInfo = {
+  summary: string;
+  date: Date;
+  articleCount: number;
+} | null;
+
+type Props = {
+  daily: DailyInfo;
+  weekly: WeeklySummary | null;
+};
+
+function formatDate(date: Date, opts: Intl.DateTimeFormatOptions) {
+  return new Date(date).toLocaleDateString("ja-JP", opts);
+}
+
+export default function WeeklySummaryBanner({ daily, weekly }: Props) {
+  const [dailyExpanded, setDailyExpanded] = useState(true);
+  const [weeklyExpanded, setWeeklyExpanded] = useState(false);
+
+  if (!daily && !weekly) return null;
 
   return (
-    <div className="rounded-xl border border-blue-500/30 bg-blue-950/30 p-4">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <span className="text-blue-400 text-sm">🤖</span>
-          <h2 className="text-sm font-semibold text-blue-300">
-            今週の業界AIサマリー
-          </h2>
-          <span className="text-xs text-blue-500">{weekOf}週</span>
-        </div>
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
-        >
-          {expanded ? "閉じる ▲" : "展開 ▼"}
-        </button>
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-      <p
-        className={`text-sm text-slate-300 leading-relaxed whitespace-pre-line ${!expanded ? "line-clamp-2" : ""}`}
-      >
-        {summary.content}
-      </p>
+      {/* 今日のポイント（日次） */}
+      {daily && (
+        <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-400 text-sm font-semibold">今日のポイント</span>
+              <span className="text-xs text-emerald-600">
+                {formatDate(daily.date, { month: "long", day: "numeric" })}
+                &nbsp;·&nbsp;{daily.articleCount}件収集
+              </span>
+            </div>
+            <button
+              onClick={() => setDailyExpanded(!dailyExpanded)}
+              className="text-xs text-emerald-500 hover:text-emerald-300 transition-colors"
+            >
+              {dailyExpanded ? "閉じる ▲" : "展開 ▼"}
+            </button>
+          </div>
+          <p
+            className={`text-sm text-slate-300 leading-relaxed whitespace-pre-line ${
+              !dailyExpanded ? "line-clamp-2" : ""
+            }`}
+          >
+            {daily.summary}
+          </p>
+        </div>
+      )}
+
+      {/* 今週の動向（週次） */}
+      {weekly && (
+        <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-blue-300 text-sm font-semibold">今週の動向</span>
+              <span className="text-xs text-blue-500">
+                {formatDate(weekly.weekOf, { month: "long", day: "numeric" })}週
+              </span>
+            </div>
+            <button
+              onClick={() => setWeeklyExpanded(!weeklyExpanded)}
+              className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+            >
+              {weeklyExpanded ? "閉じる ▲" : "展開 ▼"}
+            </button>
+          </div>
+          <p
+            className={`text-sm text-slate-300 leading-relaxed whitespace-pre-line ${
+              !weeklyExpanded ? "line-clamp-2" : ""
+            }`}
+          >
+            {weekly.content}
+          </p>
+        </div>
+      )}
+
     </div>
   );
 }
