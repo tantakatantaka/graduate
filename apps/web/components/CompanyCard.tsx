@@ -53,7 +53,7 @@ export default function CompanyCard({
         <div className="flex items-start gap-2">
           {isMain && (
             <span className="mt-0.5 shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 font-medium">
-              MAIN
+              顧客
             </span>
           )}
           <div>

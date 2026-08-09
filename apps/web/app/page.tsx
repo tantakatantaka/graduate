@@ -65,11 +65,11 @@ export default async function DashboardPage() {
         const subs = companies.filter((c) => c.role !== "main");
         return (
           <>
-            {/* ① メイン企業 */}
+            {/* ① 顧客情報 */}
             {main.length > 0 && (
               <section>
                 <h2 className="text-slate-400 text-sm font-medium uppercase tracking-wider mb-3">
-                  メイン企業
+                  顧客情報
                 </h2>
                 <div className="grid grid-cols-1 gap-4">
                   {main.map((company) => (
@@ -92,10 +92,10 @@ export default async function DashboardPage() {
               />
             </section>
 
-            {/* ③ サブ企業 */}
+            {/* ③ エンドユーザー情報 */}
             <section>
               <h2 className="text-slate-400 text-sm font-medium uppercase tracking-wider mb-3">
-                サブ企業
+                エンドユーザー情報
               </h2>
               {subs.length === 0 ? (
                 <div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-center text-slate-500">
