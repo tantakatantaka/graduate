@@ -2,8 +2,11 @@ import { prisma } from "@/lib/db";
 import CompanyCard from "@/components/CompanyCard";
 import ArticleFeed from "@/components/ArticleFeed";
 import WeeklySummaryBanner from "@/components/WeeklySummaryBanner";
+import { rankArticles } from "@/lib/rank-articles";
 
 export const revalidate = 3600; // 1時間キャッシュ
+
+const FEED_LIMIT = 10;
 
 async function getCompanies() {
   return prisma.company.findMany({
@@ -12,7 +15,7 @@ async function getCompanies() {
       articles: {
         include: { article: true },
         orderBy: { article: { publishedAt: "desc" } },
-        take: 3,
+        take: 5,
       },
       stockData: {
         orderBy: { date: "desc" },
@@ -33,16 +36,24 @@ async function getLatestDailySnapshot() {
   });
 }
 
-async function getLatestArticles() {
-  return prisma.article.findMany({
+/** 直近候補からルールベースで上位10件に絞る */
+async function getTopIndustryArticles() {
+  const candidates = await prisma.article.findMany({
     orderBy: { publishedAt: "desc" },
-    take: 20,
+    take: 100,
     include: {
       companies: {
         include: { company: { select: { name: true, ticker: true } } },
       },
     },
   });
+
+  const mapped = candidates.map((a) => ({
+    ...a,
+    companies: a.companies.map((ac) => ac.company),
+  }));
+
+  return rankArticles(mapped, FEED_LIMIT);
 }
 
 export default async function DashboardPage() {
@@ -50,7 +61,7 @@ export default async function DashboardPage() {
     getCompanies(),
     getLatestSummary(),
     getLatestDailySnapshot(),
-    getLatestArticles(),
+    getTopIndustryArticles(),
   ]);
 
   return (
@@ -79,17 +90,17 @@ export default async function DashboardPage() {
               </section>
             )}
 
-            {/* ② 業界ニュースフィード */}
+            {/* ② 業界ニュースフィード（優先度上位10件） */}
             <section>
-              <h2 className="text-slate-400 text-sm font-medium uppercase tracking-wider mb-3">
-                業界ニュースフィード
-              </h2>
-              <ArticleFeed
-                articles={articles.map((a) => ({
-                  ...a,
-                  companies: a.companies.map((ac) => ac.company),
-                }))}
-              />
+              <div className="flex items-baseline justify-between mb-3">
+                <h2 className="text-slate-400 text-sm font-medium uppercase tracking-wider">
+                  業界ニュースフィード
+                </h2>
+                <span className="text-xs text-slate-600">
+                  優先度上位 {articles.length} 件
+                </span>
+              </div>
+              <ArticleFeed articles={articles} />
             </section>
 
             {/* ③ エンドユーザー情報 */}
