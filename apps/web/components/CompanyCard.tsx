@@ -70,14 +70,19 @@ export default function CompanyCard({
           </div>
         </div>
 
-        {/* 株価（非上場は表示なし、ソニーSCは親会社SONY） */}
+        {/* 株価（ラピダスのみ非上場、ソニーSCは親会社SONY、キオクシアは東証・円） */}
         {latestStock ? (
           <div className="text-right shrink-0">
             {company.ticker === "SONY-SC" && (
               <p className="text-[10px] text-slate-600 mb-0.5">親会社 SONY</p>
             )}
+            {company.ticker === "KIOXIA" && (
+              <p className="text-[10px] text-slate-600 mb-0.5">東証 285A</p>
+            )}
             <p className={`font-mono text-white ${isMain ? "text-base" : "text-sm"}`}>
-              ${latestStock.close.toFixed(2)}
+              {company.ticker === "KIOXIA"
+                ? `¥${Math.round(latestStock.close).toLocaleString("ja-JP")}`
+                : `$${latestStock.close.toFixed(2)}`}
             </p>
             {changePercent !== null && (
               <p
@@ -89,7 +94,7 @@ export default function CompanyCard({
             )}
           </div>
         ) : (
-          (company.ticker === "KIOXIA" || company.ticker === "RAPIDUS") && (
+          company.ticker === "RAPIDUS" && (
             <p className="text-[10px] text-slate-600 shrink-0">非上場</p>
           )
         )}

@@ -4,17 +4,29 @@ import { fetchDailyBars } from "../lib/yahoo-finance.js";
 
 /**
  * 社内ティッカー → Yahoo Finance シンボル
- * 非上場（KIOXIA / RAPIDUS）は対象外
+ * 非上場（RAPIDUS）は対象外
  * ソニーセミコンダクターは親会社 SONY で代替
+ * キオクシアは東証プライム 285A.T（円建て）
  */
-const STOCK_SYMBOLS: { ticker: string; yahoo: string; label: string }[] = [
-  { ticker: "AMAT", yahoo: "AMAT", label: "Applied Materials" },
-  { ticker: "TSM", yahoo: "TSM", label: "TSMC" },
-  { ticker: "MU", yahoo: "MU", label: "Micron" },
-  { ticker: "SONY-SC", yahoo: "SONY", label: "Sony (親会社)" },
+const STOCK_SYMBOLS: {
+  ticker: string;
+  yahoo: string;
+  label: string;
+  currency: "USD" | "JPY";
+}[] = [
+  { ticker: "AMAT", yahoo: "AMAT", label: "Applied Materials", currency: "USD" },
+  { ticker: "TSM", yahoo: "TSM", label: "TSMC", currency: "USD" },
+  { ticker: "MU", yahoo: "MU", label: "Micron", currency: "USD" },
+  { ticker: "KIOXIA", yahoo: "285A.T", label: "Kioxia (東証)", currency: "JPY" },
+  { ticker: "SONY-SC", yahoo: "SONY", label: "Sony (親会社)", currency: "USD" },
 ];
 
-async function fetchAndSave(ticker: string, yahoo: string, label: string) {
+async function fetchAndSave(
+  ticker: string,
+  yahoo: string,
+  label: string,
+  currency: "USD" | "JPY"
+) {
   const company = await prisma.company.findUnique({ where: { ticker } });
   if (!company) {
     console.log(`  ⚠️ ${ticker} がDBにありません（先に collect を実行）`);
@@ -72,8 +84,12 @@ async function fetchAndSave(ticker: string, yahoo: string, label: string) {
     prev && prev.close > 0
       ? ((latest.close - prev.close) / prev.close) * 100
       : null;
+  const priceLabel =
+    currency === "JPY"
+      ? `¥${Math.round(latest.close).toLocaleString("ja-JP")}`
+      : `$${latest.close.toFixed(2)}`;
   console.log(
-    `  ✓ ${saved}日分保存 / 最新 $${latest.close.toFixed(2)}` +
+    `  ✓ ${saved}日分保存 / 最新 ${priceLabel}` +
       (chg != null ? ` (${chg >= 0 ? "+" : ""}${chg.toFixed(2)}%)` : "")
   );
 }
@@ -81,9 +97,9 @@ async function fetchAndSave(ticker: string, yahoo: string, label: string) {
 async function main() {
   console.log("🚀 株価取得開始:", new Date().toLocaleString("ja-JP"));
 
-  for (const { ticker, yahoo, label } of STOCK_SYMBOLS) {
+  for (const { ticker, yahoo, label, currency } of STOCK_SYMBOLS) {
     try {
-      await fetchAndSave(ticker, yahoo, label);
+      await fetchAndSave(ticker, yahoo, label, currency);
       // レート制限回避
       await new Promise((r) => setTimeout(r, 500));
     } catch (e) {
