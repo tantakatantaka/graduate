@@ -10,7 +10,8 @@
     "collect": "tsx src/jobs/collect.ts",
     "summarize": "tsx src/jobs/summarize.ts",
     "snapshot": "tsx src/jobs/snapshot.ts",
-    "translate": "tsx src/jobs/translate.ts"
+    "translate": "tsx src/jobs/translate.ts",
+    "stock": "tsx src/jobs/stock.ts"
   },
   "dependencies": {
     "@semiconductor/db": "workspace:*",

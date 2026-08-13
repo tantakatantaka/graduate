@@ -16,8 +16,14 @@ cron.schedule("30 5 * * *", () => {
   execSync("pnpm translate", { stdio: "inherit" });
 });
 
-// 毎日 6:00 に日次スナップショット生成（収集完了後）
+// 毎日 6:00 に株価取得（米市場終値反映は翌日朝）
 cron.schedule("0 6 * * *", () => {
+  console.log("⏰ 株価取得ジョブ実行");
+  execSync("pnpm stock", { stdio: "inherit" });
+});
+
+// 毎日 6:15 に日次スナップショット生成
+cron.schedule("15 6 * * *", () => {
   console.log("⏰ 日次スナップショット生成ジョブ実行");
   execSync("pnpm snapshot", { stdio: "inherit" });
 });
