@@ -21,10 +21,21 @@ type TopArticle = {
   companies: string[];
 };
 
+const ENABLE_AI = process.env.ENABLE_AI === "true";
+
 async function generateDailySummary(
   articles: { title: string; summary: string | null; category: string | null }[]
 ): Promise<string> {
   if (articles.length === 0) return "本日は収集された記事がありませんでした。";
+
+  // AIなし: 件数と先頭タイトルで簡易サマリー
+  if (!ENABLE_AI) {
+    const titles = articles
+      .slice(0, 5)
+      .map((a) => `・${a.title}`)
+      .join("\n");
+    return `本日 ${articles.length} 件の記事を収集しました。\n${titles}`;
+  }
 
   const list = articles
     .slice(0, 30)

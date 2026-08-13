@@ -6,6 +6,7 @@ import { matchCompanies, COMPANIES } from "../lib/companies.js";
 import { summarizeArticle } from "../lib/openai.js";
 
 const parser = new Parser();
+const ENABLE_AI = process.env.ENABLE_AI === "true";
 
 async function ensureCompaniesExist() {
   for (const company of COMPANIES) {
@@ -51,12 +52,12 @@ async function collectFromSource(source: (typeof RSS_SOURCES)[number]) {
       `${item.title} ${item.contentSnippet ?? ""}`
     );
 
-    let summary = null;
+    let summary: string | null = item.contentSnippet?.slice(0, 120) ?? null;
     let category = "その他";
-    let importance = "medium";
+    let importance = matchedTickers.length > 0 ? "medium" : "low";
 
-    // 企業にマッチした記事のみAI要約を実行
-    if (matchedTickers.length > 0) {
+    // ENABLE_AI=true のときだけ OpenAI で要約・分類
+    if (ENABLE_AI && matchedTickers.length > 0) {
       try {
         const result = await summarizeArticle(
           item.title,
@@ -99,6 +100,7 @@ async function collectFromSource(source: (typeof RSS_SOURCES)[number]) {
 
 async function main() {
   console.log("🚀 RSS収集ジョブ開始:", new Date().toLocaleString("ja-JP"));
+  console.log(`🤖 AI要約: ${ENABLE_AI ? "ON" : "OFF（RSS本文抜粋のみ）"}`);
   await ensureCompaniesExist();
 
   for (const source of RSS_SOURCES) {
