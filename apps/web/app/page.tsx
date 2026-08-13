@@ -4,7 +4,7 @@ import ArticleFeed from "@/components/ArticleFeed";
 import WeeklySummaryBanner from "@/components/WeeklySummaryBanner";
 import { rankArticles } from "@/lib/rank-articles";
 
-export const revalidate = 3600; // 1時間キャッシュ
+export const dynamic = "force-dynamic"; // 翻訳反映をすぐ見るため常時最新取得
 
 const FEED_LIMIT = 10;
 
