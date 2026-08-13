@@ -26,6 +26,7 @@ model Company {
 model Article {
   id          String           @id @default(cuid())
   title       String
+  titleJa     String?          // DeepLによる日本語タイトル
   url         String           @unique
   summary     String?          // AI要約
   category    String?          // 決算 / 技術 / 規制 / M&A / その他

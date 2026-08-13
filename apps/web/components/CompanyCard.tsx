@@ -110,7 +110,7 @@ export default function CompanyCard({
                   </span>
                 )}
                 <p className="text-xs text-slate-400 group-hover:text-slate-200 transition-colors line-clamp-2 leading-relaxed">
-                  {ac.article.title}
+                  {ac.article.titleJa || ac.article.title}
                 </p>
                 {isMain && ac.article.summary && (
                   <p className="text-xs text-slate-600 line-clamp-1 mt-0.5 hidden sm:block">

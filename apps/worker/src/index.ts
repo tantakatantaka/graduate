@@ -10,6 +10,12 @@ cron.schedule("0 5 * * *", () => {
   execSync("pnpm collect", { stdio: "inherit" });
 });
 
+// 毎日 5:30 に上位記事をDeepLで日本語翻訳
+cron.schedule("30 5 * * *", () => {
+  console.log("⏰ 日本語翻訳ジョブ実行");
+  execSync("pnpm translate", { stdio: "inherit" });
+});
+
 // 毎日 6:00 に日次スナップショット生成（収集完了後）
 cron.schedule("0 6 * * *", () => {
   console.log("⏰ 日次スナップショット生成ジョブ実行");

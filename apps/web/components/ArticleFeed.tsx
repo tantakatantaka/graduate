@@ -15,6 +15,7 @@ const IMPORTANCE_DOT: Record<string, string> = {
 type Article = {
   id: string;
   title: string;
+  titleJa?: string | null;
   url: string;
   summary: string | null;
   category: string | null;
@@ -75,8 +76,8 @@ export default function ArticleFeed({ articles }: { articles: Article[] }) {
                   </span>
                 ))}
               </div>
-              <p className="text-sm text-slate-200 group-hover:text-white transition-colors font-medium line-clamp-1">
-                {article.title}
+              <p className="text-sm text-slate-200 group-hover:text-white transition-colors font-medium line-clamp-2">
+                {article.titleJa || article.title}
               </p>
               {article.summary && (
                 <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">
