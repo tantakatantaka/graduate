@@ -23,6 +23,16 @@ const CATEGORY_COLOR: Record<string, string> = {
   その他: "bg-slate-500/20 text-slate-300",
 };
 
+/** ダッシュボードで取得している株価の上場市場 */
+const MARKET_LABEL: Record<string, string> = {
+  AMAT: "NASDAQ",
+  TSM: "NYSE (ADR)",
+  MU: "NASDAQ",
+  KIOXIA: "東証プライム",
+  "SONY-SC": "NYSE (親会社)",
+  RAPIDUS: "非上場",
+};
+
 export default function CompanyCard({
   company,
   isMain = false,
@@ -70,15 +80,9 @@ export default function CompanyCard({
           </div>
         </div>
 
-        {/* 株価（ラピダスのみ非上場、ソニーSCは親会社SONY、キオクシアは東証・円） */}
+        {/* 株価 + 上場市場名 */}
         {latestStock ? (
           <div className="text-right shrink-0">
-            {company.ticker === "SONY-SC" && (
-              <p className="text-[10px] text-slate-600 mb-0.5">親会社 SONY</p>
-            )}
-            {company.ticker === "KIOXIA" && (
-              <p className="text-[10px] text-slate-600 mb-0.5">東証 285A</p>
-            )}
             <p className={`font-mono text-white ${isMain ? "text-base" : "text-sm"}`}>
               {company.ticker === "KIOXIA"
                 ? `¥${Math.round(latestStock.close).toLocaleString("ja-JP")}`
@@ -92,11 +96,16 @@ export default function CompanyCard({
                 {changePercent.toFixed(2)}%
               </p>
             )}
+            <p className="text-[10px] text-slate-500 mt-0.5">
+              {MARKET_LABEL[company.ticker] ?? ""}
+            </p>
           </div>
         ) : (
-          company.ticker === "RAPIDUS" && (
-            <p className="text-[10px] text-slate-600 shrink-0">非上場</p>
-          )
+          <div className="text-right shrink-0">
+            <p className="text-[10px] text-slate-600">
+              {MARKET_LABEL[company.ticker] ?? "—"}
+            </p>
+          </div>
         )}
       </div>
 
