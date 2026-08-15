@@ -1,12 +1,34 @@
 @import "tailwindcss";
 
+@theme {
+  --color-dash-bg: #070b14;
+  --color-dash-surface: #111827;
+  --color-dash-panel: #151d2e;
+  --color-dash-border: #2a3a52;
+  --color-dash-accent: #2dd4bf;
+  --color-dash-accent-soft: #14b8a6;
+  --color-dash-info: #38bdf8;
+  --color-dash-text: #e8eef7;
+  --color-dash-muted: #94a3b8;
+  --color-dash-dim: #64748b;
+}
+
 :root {
-  --background: #0a0f1e;
-  --foreground: #e2e8f0;
+  --background: #070b14;
+  --foreground: #e8eef7;
+}
+
+html {
+  font-size: 18.67px;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: "Inter", "Noto Sans JP", system-ui, sans-serif;
+  background-color: #070b14;
+  background-image:
+    radial-gradient(ellipse 90% 55% at 10% -10%, rgba(45, 212, 191, 0.1), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 95% 5%, rgba(56, 189, 248, 0.08), transparent 50%),
+    linear-gradient(180deg, #0c1220 0%, #070b14 40%, #05080f 100%);
+  background-attachment: fixed;
+  color: #e8eef7;
+  font-family: "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Segoe UI", sans-serif;
 }

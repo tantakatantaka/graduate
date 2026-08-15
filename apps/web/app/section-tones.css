@@ -1,0 +1,104 @@
+/* ダッシュボード配色 — Tailwind非依存・!importantで上書き保証 */
+
+.section-panel {
+  border-radius: 1rem !important;
+  border-style: solid !important;
+  border-width: 2px !important;
+  padding: 1rem !important;
+}
+
+@media (min-width: 768px) {
+  .section-panel {
+    padding: 1.25rem !important;
+  }
+}
+
+.section-panel__title {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.025em !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.section-panel__bar {
+  display: inline-block !important;
+  width: 0.375rem !important;
+  height: 1rem !important;
+  border-radius: 9999px !important;
+  flex-shrink: 0 !important;
+}
+
+.tone-daily {
+  border-color: #34d399 !important;
+  background-color: rgba(16, 185, 129, 0.22) !important;
+}
+.tone-daily-title { color: #6ee7b7 !important; }
+.tone-daily-bar { background-color: #34d399 !important; }
+.tone-daily-meta { color: #6ee7b7 !important; }
+.tone-daily-btn { color: #6ee7b7 !important; }
+
+.tone-weekly {
+  border-color: #818cf8 !important;
+  background-color: rgba(99, 102, 241, 0.2) !important;
+}
+.tone-weekly-title { color: #a5b4fc !important; }
+.tone-weekly-bar { background-color: #818cf8 !important; }
+.tone-weekly-meta { color: #a5b4fc !important; }
+.tone-weekly-btn { color: #a5b4fc !important; }
+
+.tone-customer {
+  border-color: #2dd4bf !important;
+  background-color: rgba(20, 184, 166, 0.2) !important;
+}
+.tone-customer-title { color: #5eead4 !important; }
+.tone-customer-bar { background-color: #2dd4bf !important; }
+
+.card-customer {
+  border: 2px solid rgba(45, 212, 191, 0.75) !important;
+  background-color: rgba(45, 212, 191, 0.16) !important;
+  border-radius: 0.75rem !important;
+}
+.badge-customer {
+  background-color: rgba(45, 212, 191, 0.25) !important;
+  color: #99f6e4 !important;
+  border: 1px solid rgba(94, 234, 212, 0.6) !important;
+}
+.link-customer { color: #5eead4 !important; }
+.divider-customer { border-color: rgba(45, 212, 191, 0.35) !important; }
+
+.tone-news {
+  border-color: #38bdf8 !important;
+  background-color: rgba(14, 165, 233, 0.2) !important;
+}
+.tone-news-title { color: #7dd3fc !important; }
+.tone-news-bar { background-color: #38bdf8 !important; }
+.tone-news-meta { color: #7dd3fc !important; }
+
+.card-news {
+  border: 1px solid rgba(56, 189, 248, 0.6) !important;
+  background-color: rgba(56, 189, 248, 0.14) !important;
+  border-radius: 0.5rem !important;
+}
+.chip-news {
+  background-color: rgba(7, 89, 133, 0.65) !important;
+  color: #e0f2fe !important;
+  border: 1px solid rgba(56, 189, 248, 0.45) !important;
+}
+
+.tone-enduser {
+  border-color: #fbbf24 !important;
+  background-color: rgba(245, 158, 11, 0.18) !important;
+}
+.tone-enduser-title { color: #fcd34d !important; }
+.tone-enduser-bar { background-color: #fbbf24 !important; }
+
+.card-enduser {
+  border: 2px solid rgba(251, 191, 36, 0.7) !important;
+  background-color: rgba(251, 191, 36, 0.14) !important;
+  border-radius: 0.75rem !important;
+}
+.link-enduser { color: #fcd34d !important; }
+.divider-enduser { border-color: rgba(251, 191, 36, 0.35) !important; }

@@ -17,26 +17,26 @@ export default async function ArchivePage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-white">アーカイブ</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-xl font-semibold text-white">バックナンバー</h1>
+          <p className="text-sm text-dash-muted mt-1">
             過去のダッシュボード履歴（{snapshots.length}日分）
           </p>
         </div>
         <a
           href="/"
-          className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+          className="text-sm text-dash-accent hover:text-dash-accent-soft transition-colors"
         >
           ← ダッシュボードへ戻る
         </a>
       </div>
 
       {snapshots.length === 0 ? (
-        <div className="rounded-xl border border-slate-800 bg-slate-900 p-12 text-center text-slate-500">
-          <p className="text-lg mb-2">アーカイブがまだありません</p>
+        <div className="rounded-xl border border-dash-border bg-dash-surface/90 p-12 text-center text-dash-dim">
+          <p className="text-lg mb-2">バックナンバーがまだありません</p>
           <p className="text-sm">
             毎日21:00に自動生成されます。手動で実行するには：
           </p>
-          <code className="mt-2 inline-block bg-slate-800 px-3 py-1 rounded text-sm text-slate-300">
+          <code className="mt-2 inline-block bg-dash-panel px-3 py-1 rounded text-sm text-dash-muted border border-dash-border">
             pnpm snapshot
           </code>
         </div>

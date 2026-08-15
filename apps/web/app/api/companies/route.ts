@@ -23,6 +23,7 @@ export async function GET() {
     nameJa: company.nameJa,
     ticker: company.ticker,
     description: company.description,
+    newsUrl: company.newsUrl,
     recentArticles: company.articles.map((ac) => ({
       id: ac.article.id,
       title: ac.article.title,

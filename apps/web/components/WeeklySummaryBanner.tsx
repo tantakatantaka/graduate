@@ -26,27 +26,28 @@ export default function WeeklySummaryBanner({ daily, weekly }: Props) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-      {/* 今日のポイント（日次） */}
       {daily && (
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4">
+        <div className="section-panel tone-daily">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="text-emerald-400 text-sm font-semibold">今日のポイント</span>
-              <span className="text-xs text-emerald-600">
+              <span className="section-panel__bar tone-daily-bar" />
+              <span className="tone-daily-title text-sm font-semibold">
+                今日のポイント
+              </span>
+              <span className="text-xs tone-daily-meta">
                 {formatDate(daily.date, { month: "long", day: "numeric" })}
                 &nbsp;·&nbsp;{daily.articleCount}件収集
               </span>
             </div>
             <button
               onClick={() => setDailyExpanded(!dailyExpanded)}
-              className="text-xs text-emerald-500 hover:text-emerald-300 transition-colors"
+              className="text-xs tone-daily-btn transition-colors"
             >
               {dailyExpanded ? "閉じる ▲" : "展開 ▼"}
             </button>
           </div>
           <p
-            className={`text-sm text-slate-300 leading-relaxed whitespace-pre-line ${
+            className={`text-sm text-dash-muted leading-relaxed whitespace-pre-line ${
               !dailyExpanded ? "line-clamp-2" : ""
             }`}
           >
@@ -55,25 +56,27 @@ export default function WeeklySummaryBanner({ daily, weekly }: Props) {
         </div>
       )}
 
-      {/* 今週の動向（週次） */}
       {weekly && (
-        <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4">
+        <div className="section-panel tone-weekly">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="text-blue-300 text-sm font-semibold">今週の動向</span>
-              <span className="text-xs text-blue-500">
+              <span className="section-panel__bar tone-weekly-bar" />
+              <span className="tone-weekly-title text-sm font-semibold">
+                先週の動向
+              </span>
+              <span className="text-xs tone-weekly-meta">
                 {formatDate(weekly.weekOf, { month: "long", day: "numeric" })}週
               </span>
             </div>
             <button
               onClick={() => setWeeklyExpanded(!weeklyExpanded)}
-              className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+              className="text-xs tone-weekly-btn transition-colors"
             >
               {weeklyExpanded ? "閉じる ▲" : "展開 ▼"}
             </button>
           </div>
           <p
-            className={`text-sm text-slate-300 leading-relaxed whitespace-pre-line ${
+            className={`text-sm text-dash-muted leading-relaxed whitespace-pre-line ${
               !weeklyExpanded ? "line-clamp-2" : ""
             }`}
           >
@@ -81,7 +84,6 @@ export default function WeeklySummaryBanner({ daily, weekly }: Props) {
           </p>
         </div>
       )}
-
     </div>
   );
 }

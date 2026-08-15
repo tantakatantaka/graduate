@@ -5,7 +5,7 @@ import { generateWeeklySummary } from "../lib/openai.js";
 async function main() {
   console.log("🚀 週次サマリー生成開始");
 
-  // 今週の記事を取得
+  // 直近7日（実質先週）の記事を取得
   const weekAgo = new Date();
   weekAgo.setDate(weekAgo.getDate() - 7);
 

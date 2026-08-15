@@ -23,18 +23,50 @@ type TopArticle = {
 
 const ENABLE_AI = process.env.ENABLE_AI === "true";
 
-async function generateDailySummary(
-  articles: { title: string; summary: string | null; category: string | null }[]
-): Promise<string> {
-  if (articles.length === 0) return "本日は収集された記事がありませんでした。";
+const SOURCE_SCORE: Record<string, number> = {
+  DIGITIMES: 14,
+  "Semiconductor Digest": 13,
+  "EE Times": 12,
+  SemiEngineering: 12,
+  "PC Watch": 12,
+  日経ビジネス: 10,
+  "Tom's Hardware": -40,
+  "EE Times Japan": -20,
+};
 
-  // AIなし: 件数と先頭タイトルで簡易サマリー
+function scoreForSnapshot(article: {
+  title: string;
+  titleJa: string | null;
+  source: string;
+  importance: string | null;
+  companies: { company: { ticker: string } }[];
+}): number {
+  let score = SOURCE_SCORE[article.source] ?? 4;
+  const tickers = article.companies.map((c) => c.company.ticker);
+  if (tickers.includes("AMAT")) score += 100;
+  score += Math.min(tickers.filter((t) => t !== "AMAT").length * 40, 120);
+  const text = `${article.titleJa ?? ""} ${article.title}`;
+  if (/(半導体|semiconductor|hbm|euv|foundry|fab|wafer|nand|dram|チップ)/i.test(text))
+    score += 16;
+  if (/(決算|earnings|量産|提携|買収|工場)/i.test(text)) score += 14;
+  if (article.importance === "high") score += 20;
+  else if (article.importance === "medium") score += 8;
+  return score;
+}
+
+async function generateDailySummary(
+  articles: { title: string; summary: string | null; category: string | null }[],
+  totalCount: number
+): Promise<string> {
+  if (totalCount === 0) return "本日は収集された記事がありませんでした。";
+
+  // AIなし: 件数と注目タイトルで簡易サマリー
   if (!ENABLE_AI) {
     const titles = articles
       .slice(0, 5)
       .map((a) => `・${a.title}`)
       .join("\n");
-    return `本日 ${articles.length} 件の記事を収集しました。\n${titles}`;
+    return `本日 ${totalCount} 件の記事を収集しました。\n${titles}`;
   }
 
   const list = articles
@@ -70,12 +102,13 @@ async function main() {
     today.toLocaleDateString("ja-JP")
   );
 
-  // 既存のスナップショットがあればスキップ
+  const force = process.env.FORCE_SNAPSHOT === "true";
   const existing = await prisma.dailySnapshot.findUnique({
     where: { date: today },
   });
-  if (existing) {
+  if (existing && !force) {
     console.log("⚠️ 本日のスナップショットは既に存在します。スキップします。");
+    console.log("   上書きする場合: FORCE_SNAPSHOT=true で再実行");
     await prisma.$disconnect();
     return;
   }
@@ -98,8 +131,19 @@ async function main() {
 
   console.log(`📰 本日の記事数: ${articles.length}件`);
 
-  // AIで日次サマリー生成
-  const summary = await generateDailySummary(articles);
+  const ranked = [...articles].sort(
+    (a, b) => scoreForSnapshot(b) - scoreForSnapshot(a)
+  );
+
+  // 日次サマリー生成（注目記事の日本語タイトルを優先）
+  const summary = await generateDailySummary(
+    ranked.map((a) => ({
+      title: a.titleJa ?? a.title,
+      summary: a.summary,
+      category: a.category,
+    })),
+    articles.length
+  );
 
   // 企業ごとの状態を集計
   const companies = await prisma.company.findMany({
@@ -133,28 +177,26 @@ async function main() {
     })),
   }));
 
-  // 注目記事トップ5（importance: high 優先）
-  const topArticles: TopArticle[] = articles
-    .sort((a, b) => {
-      const order = { high: 0, medium: 1, low: 2 };
-      return (
-        (order[a.importance as keyof typeof order] ?? 2) -
-        (order[b.importance as keyof typeof order] ?? 2)
-      );
-    })
-    .slice(0, 5)
-    .map((a) => ({
-      title: a.title,
-      url: a.url,
-      category: a.category,
-      importance: a.importance,
-      source: a.source,
-      companies: a.companies.map((ac) => ac.company.ticker),
-    }));
+  // 注目記事トップ5（ランキング優先）
+  const topArticles: TopArticle[] = ranked.slice(0, 5).map((a) => ({
+    title: a.titleJa ?? a.title,
+    url: a.url,
+    category: a.category,
+    importance: a.importance,
+    source: a.source,
+    companies: a.companies.map((ac) => ac.company.ticker),
+  }));
 
-  await prisma.dailySnapshot.create({
-    data: {
+  await prisma.dailySnapshot.upsert({
+    where: { date: today },
+    create: {
       date: today,
+      summary,
+      companies: companiesSnapshot,
+      articleCount: articles.length,
+      topArticles,
+    },
+    update: {
       summary,
       companies: companiesSnapshot,
       articleCount: articles.length,
@@ -162,7 +204,9 @@ async function main() {
     },
   });
 
-  console.log("✅ 日次スナップショット保存完了");
+  console.log(
+    existing ? "✅ 日次スナップショットを更新しました" : "✅ 日次スナップショット保存完了"
+  );
   console.log(`   サマリー: ${summary.slice(0, 80)}...`);
   await prisma.$disconnect();
 }

@@ -5,8 +5,39 @@ import { RSS_SOURCES } from "../lib/rss-sources.js";
 import { matchCompanies, COMPANIES } from "../lib/companies.js";
 import { summarizeArticle } from "../lib/openai.js";
 
-const parser = new Parser();
+const parser = new Parser({
+  headers: {
+    "User-Agent":
+      "Mozilla/5.0 (compatible; SemiconductorDashboard/1.0; +https://github.com/tantakatantaka/graduate)",
+    Accept: "application/rss+xml, application/xml, text/xml, */*",
+  },
+  timeout: 20000,
+});
 const ENABLE_AI = process.env.ENABLE_AI === "true";
+
+async function fetchFeed(url: string) {
+  try {
+    return await parser.parseURL(url);
+  } catch {
+    // DIGITIMES 等は UA / Accept 不足で 406 になることがあるため、fetch 経由で再試行
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (compatible; SemiconductorDashboard/1.0; +https://github.com/tantakatantaka/graduate)",
+        Accept: "application/rss+xml, application/xml, text/xml, */*",
+      },
+      signal: AbortSignal.timeout(20000),
+    });
+    if (!res.ok) {
+      throw new Error(`Status code ${res.status}`);
+    }
+    const xml = await res.text();
+    if (!xml.includes("<rss") && !xml.includes("<rdf:RDF") && !xml.includes("<feed")) {
+      throw new Error("Response is not RSS/Atom XML");
+    }
+    return parser.parseString(xml);
+  }
+}
 
 async function ensureCompaniesExist() {
   for (const company of COMPANIES) {
@@ -18,10 +49,13 @@ async function ensureCompaniesExist() {
         ticker: company.ticker,
         role: company.role,
         description: company.description,
+        newsUrl: company.newsUrl,
         keywords: company.keywords as unknown as string[],
       },
       update: {
         role: company.role,
+        description: company.description,
+        newsUrl: company.newsUrl,
         keywords: company.keywords as unknown as string[],
       },
     });
@@ -33,7 +67,7 @@ async function collectFromSource(source: (typeof RSS_SOURCES)[number]) {
   console.log(`📡 収集開始: ${source.name}`);
   let feed;
   try {
-    feed = await parser.parseURL(source.url);
+    feed = await fetchFeed(source.url);
   } catch (e) {
     console.error(`❌ RSS取得失敗: ${source.name}`, e);
     return;

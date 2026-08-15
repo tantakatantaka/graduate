@@ -16,6 +16,7 @@ model Company {
   role        String      @default("sub") // "main" | "sub"
   description String?
   logoUrl     String?
+  newsUrl     String?     // 公式ニュース／プレスリリース一覧
   keywords    String[]    // マッチング用キーワード（企業名・ティッカー・別名）
   articles    ArticleCompany[]
   stockData   StockData[]

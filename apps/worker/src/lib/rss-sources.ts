@@ -1,16 +1,6 @@
 // 半導体業界関連のRSSフィード一覧
 export const RSS_SOURCES = [
   {
-    name: "EE Times Japan",
-    url: "https://rss.itmedia.co.jp/rss/2.0/ee_latest.xml",
-    lang: "ja",
-  },
-  {
-    name: "日経ビジネス",
-    url: "https://business.nikkei.com/rss/sns/nb.rdf",
-    lang: "ja",
-  },
-  {
     name: "EE Times",
     url: "https://www.eetimes.com/feed/",
     lang: "en",
@@ -21,8 +11,23 @@ export const RSS_SOURCES = [
     lang: "en",
   },
   {
-    name: "Tom's Hardware",
-    url: "https://www.tomshardware.com/feeds/all",
+    name: "DIGITIMES",
+    url: "https://www.digitimes.com/rss/daily.xml",
     lang: "en",
+  },
+  {
+    name: "Semiconductor Digest",
+    url: "https://www.semiconductor-digest.com/feed/",
+    lang: "en",
+  },
+  {
+    name: "PC Watch",
+    url: "https://pc.watch.impress.co.jp/data/rss/1.0/pcw/feed.rdf",
+    lang: "ja",
+  },
+  {
+    name: "日経ビジネス",
+    url: "https://business.nikkei.com/rss/sns/nb.rdf",
+    lang: "ja",
   },
 ] as const;

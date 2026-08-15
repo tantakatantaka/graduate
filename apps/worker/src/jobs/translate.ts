@@ -3,22 +3,53 @@ import { prisma } from "@semiconductor/db";
 import { looksJapanese, translateToJa } from "../lib/deepl.js";
 
 /**
- * 簡易スコア（webのrank-articlesと同等の要点）
+ * web/lib/rank-articles.ts と揃えたスコア（フィード表示漏れ防止）
  */
+const SOURCE_SCORE: Record<string, number> = {
+  "EE Times": 12,
+  SemiEngineering: 12,
+  DIGITIMES: 14,
+  "Semiconductor Digest": 13,
+  "PC Watch": 12,
+  日経ビジネス: 10,
+  "Tom's Hardware": -40,
+  "EE Times Japan": -20,
+};
+
+const PRIORITY_KEYWORDS: { pattern: RegExp; score: number }[] = [
+  { pattern: /\b(euv|hbm|hbm3|hbm4|2nm|3nm|gaa|cvd|ald|ale)\b/i, score: 20 },
+  { pattern: /(決算|earnings|revenue|ガイダンス)/i, score: 18 },
+  { pattern: /(工場|fab|foundry|量産|着工|補助金|規制|export\s*control)/i, score: 16 },
+  { pattern: /(合併|買収|m&a|出資|提携)/i, score: 14 },
+  { pattern: /(半導体|semiconductor|chip|wafer|nand|dram)/i, score: 10 },
+];
+
 function score(
   title: string,
   tickers: string[],
   source: string,
-  publishedAt: Date
+  publishedAt: Date,
+  importance: string | null
 ) {
   let s = 0;
   if (tickers.includes("AMAT")) s += 100;
   s += Math.min(tickers.filter((t) => t !== "AMAT").length * 40, 120);
-  if (/(euv|hbm|semiconductor|半導体|決算|工場|fab)/i.test(title)) s += 15;
+
+  for (const { pattern, score: kw } of PRIORITY_KEYWORDS) {
+    if (pattern.test(title)) s += kw;
+  }
+
   const ageDays = (Date.now() - publishedAt.getTime()) / 86400000;
   if (ageDays <= 1) s += 30;
+  else if (ageDays <= 3) s += 20;
   else if (ageDays <= 7) s += 10;
-  if (source.includes("EE Times") || source === "SemiEngineering") s += 12;
+  else if (ageDays <= 14) s += 4;
+
+  s += SOURCE_SCORE[source] ?? 4;
+
+  if (importance === "high") s += 20;
+  else if (importance === "medium") s += 8;
+
   return s;
 }
 
@@ -48,7 +79,7 @@ async function main() {
     process.exit(1);
   }
 
-  // ① フィード用：優先度上位10件
+  // ① フィード用：優先度上位15件（表示10件＋余裕）
   const candidates = await prisma.article.findMany({
     orderBy: { publishedAt: "desc" },
     take: 100,
@@ -57,6 +88,7 @@ async function main() {
     },
   });
 
+  // 表示は上位10件。AI重要度更新で順位が動くため余裕を持って翻訳する
   const feedTop = candidates
     .map((a) => ({
       article: a,
@@ -64,15 +96,19 @@ async function main() {
         a.title,
         a.companies.map((c) => c.company.ticker),
         a.source,
-        a.publishedAt
+        a.publishedAt,
+        a.importance
       ),
     }))
     .filter((x) => x.score >= 20)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 10)
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return b.article.publishedAt.getTime() - a.article.publishedAt.getTime();
+    })
+    .slice(0, 25)
     .map((x) => x.article);
 
-  // ② 企業カード用：各社の最新5件（未翻訳）
+  // ② 企業カード用：各社の最新5件
   const companies = await prisma.company.findMany({
     include: {
       articles: {
@@ -87,8 +123,10 @@ async function main() {
     c.articles.map((ac) => ac.article)
   );
 
-  // 重複排除
-  const byId = new Map<string, { id: string; title: string; titleJa: string | null }>();
+  const byId = new Map<
+    string,
+    { id: string; title: string; titleJa: string | null }
+  >();
   for (const a of [...feedTop, ...cardArticles]) {
     byId.set(a.id, a);
   }

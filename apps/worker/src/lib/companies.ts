@@ -14,6 +14,7 @@ export const COMPANIES = [
       "Applied Material",
     ],
     description: "半導体製造装置・材料の世界最大手",
+    newsUrl: "https://www.appliedmaterials.com/jp/ja/news-and-media/press-releases.html",
   },
   {
     name: "TSMC",
@@ -22,6 +23,7 @@ export const COMPANIES = [
     role: "sub" as const,
     keywords: ["TSMC", "TSM", "台湾積体電路", "台積電", "JASM", "ジャスム", "Japan Advanced Semiconductor Manufacturing"],
     description: "世界最大の半導体受託製造企業（日本子会社JASM含む）",
+    newsUrl: "https://pr.tsmc.com/japanese/latest-news",
   },
   {
     name: "Kioxia",
@@ -30,6 +32,7 @@ export const COMPANIES = [
     role: "sub" as const,
     keywords: ["Kioxia", "キオクシア", "KIOXIA", "旧東芝メモリ"],
     description: "NANDフラッシュメモリ大手（旧東芝メモリ）",
+    newsUrl: "https://www.kioxia.com/ja-jp/news.html",
   },
   {
     name: "Rapidus",
@@ -38,6 +41,7 @@ export const COMPANIES = [
     role: "sub" as const,
     keywords: ["Rapidus", "ラピダス", "ラピダス株式会社"],
     description: "日本の次世代半導体製造を担う新興ファウンドリ",
+    newsUrl: "https://www.rapidus.inc/news_topics/",
   },
   {
     name: "Micron",
@@ -46,6 +50,7 @@ export const COMPANIES = [
     role: "sub" as const,
     keywords: ["Micron", "MU", "マイクロン", "Micron Technology"],
     description: "メモリ半導体（DRAM/NAND）大手",
+    newsUrl: "https://jp.micron.com/about/press/news",
   },
   {
     name: "Sony Semiconductor",
@@ -60,6 +65,7 @@ export const COMPANIES = [
       "SSS",
     ],
     description: "CMOSイメージセンサー世界シェアトップ（ソニーグループ）",
+    newsUrl: "https://www.sony-semicon.com/ja/news/index.html",
   },
 ] as const;
 
