@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { prisma } from "@semiconductor/db";
 import { openai } from "../lib/openai.js";
+import { isAiEnabled } from "../lib/ai-config.js";
 
 type CompanySnapshot = {
   ticker: string;
@@ -20,8 +21,6 @@ type TopArticle = {
   source: string;
   companies: string[];
 };
-
-const ENABLE_AI = process.env.ENABLE_AI === "true";
 
 const SOURCE_SCORE: Record<string, number> = {
   DIGITIMES: 14,
@@ -61,7 +60,7 @@ async function generateDailySummary(
   if (totalCount === 0) return "本日は収集された記事がありませんでした。";
 
   // AIなし: 件数と注目タイトルで簡易サマリー
-  if (!ENABLE_AI) {
+  if (!isAiEnabled()) {
     const titles = articles
       .slice(0, 5)
       .map((a) => `・${a.title}`)
@@ -81,7 +80,7 @@ async function generateDailySummary(
       {
         role: "system",
         content:
-          "あなたは半導体業界の専門アナリストです。本日の半導体業界ニュースを、200字程度で簡潔にまとめてください。",
+          "あなたは半導体業界の専門アナリストです。本日の半導体業界ニュースを、200字程度の日本語で簡潔にまとめてください。",
       },
       {
         role: "user",
@@ -101,6 +100,7 @@ async function main() {
     "📸 日次スナップショット生成開始:",
     today.toLocaleDateString("ja-JP")
   );
+  console.log(`🤖 AI要約: ${isAiEnabled() ? "ON" : "OFF"}`);
 
   const force = process.env.FORCE_SNAPSHOT === "true";
   const existing = await prisma.dailySnapshot.findUnique({

@@ -5,17 +5,34 @@ export const openai = new OpenAI({
 });
 
 export type ArticleSummary = {
-  summary: string;        // 100字程度の日本語要約
-  category: string;       // 決算 / 技術 / 規制 / M&A / その他
+  summary: string; // 100字程度の日本語要約
+  category: string; // 決算 / 技術 / 規制 / M&A / その他
   importance: "high" | "medium" | "low";
 };
 
-// 記事タイトル＋冒頭テキストをAIで要約・分類する
+const VALID_CATEGORIES = new Set(["決算", "技術", "規制", "M&A", "その他"]);
+const VALID_IMPORTANCE = new Set(["high", "medium", "low"]);
+
+function normalizeSummary(parsed: ArticleSummary): ArticleSummary {
+  const category = VALID_CATEGORIES.has(parsed.category)
+    ? parsed.category
+    : "その他";
+  const importance = VALID_IMPORTANCE.has(parsed.importance)
+    ? parsed.importance
+    : "medium";
+  return {
+    summary: (parsed.summary ?? "").trim().slice(0, 120),
+    category,
+    importance: importance as ArticleSummary["importance"],
+  };
+}
+
+/** 記事タイトル＋冒頭テキストをAIで要約・分類する */
 export async function summarizeArticle(
   title: string,
   text: string
 ): Promise<ArticleSummary> {
-  const truncated = text.slice(0, 500); // コスト削減のため先頭500文字のみ
+  const truncated = text.slice(0, 500);
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
@@ -25,11 +42,11 @@ export async function summarizeArticle(
       {
         role: "system",
         content: `あなたは半導体業界のニュースアナリストです。
-以下の記事を読んで、JSON形式で返答してください。
+必ず日本語で要約し、JSONのみで返答してください。
 
 フォーマット:
 {
-  "summary": "100字以内の日本語要約",
+  "summary": "100字以内の日本語要約（事実を簡潔に）",
   "category": "決算 / 技術 / 規制 / M&A / その他 のいずれか",
   "importance": "high（業界全体に影響）/ medium（特定企業に影響）/ low（参考情報）のいずれか"
 }`,
@@ -42,11 +59,10 @@ export async function summarizeArticle(
   });
 
   const content = response.choices[0].message.content ?? "{}";
-  const parsed = JSON.parse(content) as ArticleSummary;
-  return parsed;
+  return normalizeSummary(JSON.parse(content) as ArticleSummary);
 }
 
-// 週次サマリーを生成する
+/** 週次サマリーを生成する */
 export async function generateWeeklySummary(
   articles: { title: string; summary: string; category: string }[]
 ): Promise<string> {
@@ -61,7 +77,7 @@ export async function generateWeeklySummary(
       {
         role: "system",
         content:
-          "あなたは半導体業界の専門アナリストです。先週の半導体業界ニュースを、投資家・営業担当者向けに400字程度で簡潔にまとめてください。重要トレンドを3点に絞って箇条書きで示してください。",
+          "あなたは半導体業界の専門アナリストです。先週の半導体業界ニュースを、投資家・営業担当者向けに400字程度の日本語で簡潔にまとめてください。重要トレンドを3点に絞って箇条書きで示してください。",
       },
       {
         role: "user",

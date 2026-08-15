@@ -40,9 +40,24 @@ pnpm db:push
 # フロントエンドのみ
 cd apps/web && pnpm dev
 
-# RSS収集を手動実行（動作確認）
+# RSS収集を手動実行（AI要約込み）
 cd apps/worker && pnpm collect
+
+# 既存記事へのAI要約バックフィル（任意）
+cd apps/worker && pnpm ai-backfill
 ```
+
+### AI要約の動作
+
+`ENABLE_AI=true`（デフォルト）のとき worker が次を実行します。
+
+| タイミング | 内容 |
+|-----------|------|
+| 収集時（毎日5:00） | 企業マッチ／半導体関連記事の要約・カテゴリ・重要度 |
+| スナップショット（毎日6:15） | 「今日のポイント」日次サマリー |
+| 週次（月曜9:00） | 「先週の動向」週次サマリー |
+
+オフにする場合は `apps/worker/.env` で `ENABLE_AI=false` にしてください。
 
 ## ディレクトリ構成
 

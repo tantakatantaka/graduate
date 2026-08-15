@@ -1,11 +1,12 @@
 import "dotenv/config";
 import { prisma } from "@semiconductor/db";
 import { generateWeeklySummary } from "../lib/openai.js";
+import { isAiEnabled } from "../lib/ai-config.js";
 
 async function main() {
   console.log("🚀 週次サマリー生成開始");
+  console.log(`🤖 AI要約: ${isAiEnabled() ? "ON" : "OFF"}`);
 
-  // 直近7日（実質先週）の記事を取得
   const weekAgo = new Date();
   weekAgo.setDate(weekAgo.getDate() - 7);
 
@@ -23,17 +24,26 @@ async function main() {
     return;
   }
 
-  const content = await generateWeeklySummary(
-    articles.map((a) => ({
-      title: a.title,
-      summary: a.summary ?? "",
-      category: a.category ?? "その他",
-    }))
-  );
+  const mapped = articles.map((a) => ({
+    title: a.titleJa ?? a.title,
+    summary: a.summary ?? "",
+    category: a.category ?? "その他",
+  }));
+
+  let content: string;
+  if (isAiEnabled()) {
+    content = await generateWeeklySummary(mapped);
+  } else {
+    const lines = mapped
+      .slice(0, 8)
+      .map((a) => `・[${a.category}] ${a.title}`)
+      .join("\n");
+    content = `先週の注目トピック（AIオフ）:\n${lines}`;
+  }
 
   const weekOf = new Date();
   weekOf.setHours(0, 0, 0, 0);
-  weekOf.setDate(weekOf.getDate() - weekOf.getDay()); // 週の月曜日
+  weekOf.setDate(weekOf.getDate() - weekOf.getDay());
 
   await prisma.weeklySummary.upsert({
     where: { weekOf },

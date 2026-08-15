@@ -11,7 +11,8 @@
     "summarize": "tsx src/jobs/summarize.ts",
     "snapshot": "tsx src/jobs/snapshot.ts",
     "translate": "tsx src/jobs/translate.ts",
-    "stock": "tsx src/jobs/stock.ts"
+    "stock": "tsx src/jobs/stock.ts",
+    "ai-backfill": "tsx src/jobs/ai-backfill.ts"
   },
   "dependencies": {
     "@semiconductor/db": "workspace:*",

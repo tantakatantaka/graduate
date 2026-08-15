@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Company {
+  id          String      @id @default(cuid())
+  name        String
+  nameJa      String?
+  ticker      String      @unique
+  role        String      @default("sub") // "main" | "sub"
+  description String?
+  logoUrl     String?
+  newsUrl     String?     // 公式ニュース／プレスリリース一覧
+  keywords    String[]    // マッチング用キーワード（企業名・ティッカー・別名）
+  articles    ArticleCompany[]
+  stockData   StockData[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Article {
+  id          String           @id @default(cuid())
+  title       String
+  titleJa     String?          // DeepLによる日本語タイトル
+  url         String           @unique
+  summary     String?          // AI要約
+  category    String?          // 決算 / 技術 / 規制 / M&A / その他
+  importance  String?          // high / medium / low
+  publishedAt DateTime
+  source      String           // RSSソース名
+  sourceUrl   String?
+  companies   ArticleCompany[]
+  createdAt   DateTime         @default(now())
+}
+
+// Article と Company の多対多中間テーブル
+model ArticleCompany {
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  @@id([articleId, companyId])
+}
+
+model StockData {
+  id        String   @id @default(cuid())
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+  date      DateTime @db.Date
+  close     Float
+  open      Float?
+  high      Float?
+  low       Float?
+  volume    BigInt?
+  change    Float?   // 前日比%
+  createdAt DateTime @default(now())
+
+  @@unique([companyId, date])
+}
+
+model WeeklySummary {
+  id        String   @id @default(cuid())
+  content   String
+  weekOf    DateTime @db.Date @unique
+  createdAt DateTime @default(now())
+}
+
+// 毎日のダッシュボード状態スナップショット
+model DailySnapshot {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date @unique
+  // その日の業界全体サマリー（AI生成）
+  summary   String
+  // 企業ごとの状態（株価・記事数・注目記事）をJSONで保存
+  companies Json
+  // その日に収集した記事の総数
+  articleCount Int   @default(0)
+  // その日の注目記事トップ5（タイトル・URL・カテゴリ）をJSONで保存
+  topArticles  Json
+  createdAt DateTime @default(now())
+}

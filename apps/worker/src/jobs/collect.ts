@@ -4,6 +4,7 @@ import { prisma } from "@semiconductor/db";
 import { RSS_SOURCES } from "../lib/rss-sources.js";
 import { matchCompanies, COMPANIES } from "../lib/companies.js";
 import { summarizeArticle } from "../lib/openai.js";
+import { isAiEnabled, isSemiconductorRelevant } from "../lib/ai-config.js";
 
 const parser = new Parser({
   headers: {
@@ -13,7 +14,6 @@ const parser = new Parser({
   },
   timeout: 20000,
 });
-const ENABLE_AI = process.env.ENABLE_AI === "true";
 
 async function fetchFeed(url: string) {
   try {
@@ -90,8 +90,13 @@ async function collectFromSource(source: (typeof RSS_SOURCES)[number]) {
     let category = "その他";
     let importance = matchedTickers.length > 0 ? "medium" : "low";
 
-    // ENABLE_AI=true のときだけ OpenAI で要約・分類
-    if (ENABLE_AI && matchedTickers.length > 0) {
+    const textForAi = `${item.title} ${item.contentSnippet ?? ""}`;
+    const shouldAi =
+      isAiEnabled() &&
+      (matchedTickers.length > 0 || isSemiconductorRelevant(textForAi));
+
+    // ENABLE_AI=true のとき、企業マッチまたは半導体関連記事を要約・分類
+    if (shouldAi) {
       try {
         const result = await summarizeArticle(
           item.title,
@@ -134,7 +139,7 @@ async function collectFromSource(source: (typeof RSS_SOURCES)[number]) {
 
 async function main() {
   console.log("🚀 RSS収集ジョブ開始:", new Date().toLocaleString("ja-JP"));
-  console.log(`🤖 AI要約: ${ENABLE_AI ? "ON" : "OFF（RSS本文抜粋のみ）"}`);
+  console.log(`🤖 AI要約: ${isAiEnabled() ? "ON" : "OFF（RSS本文抜粋のみ）"}`);
   await ensureCompaniesExist();
 
   for (const source of RSS_SOURCES) {
