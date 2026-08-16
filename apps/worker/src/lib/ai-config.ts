@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "./load-env.js";
 
 /** OpenAI 要約・分類を実行するか（apps/worker/.env の ENABLE_AI） */
 export function isAiEnabled(): boolean {

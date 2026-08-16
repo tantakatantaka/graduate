@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "../lib/load-env.js";
 import Parser from "rss-parser";
 import { prisma } from "@semiconductor/db";
 import { RSS_SOURCES } from "../lib/rss-sources.js";

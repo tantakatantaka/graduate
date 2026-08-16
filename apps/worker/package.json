@@ -12,18 +12,21 @@
     "snapshot": "tsx src/jobs/snapshot.ts",
     "translate": "tsx src/jobs/translate.ts",
     "stock": "tsx src/jobs/stock.ts",
-    "ai-backfill": "tsx src/jobs/ai-backfill.ts"
+    "ai-backfill": "tsx src/jobs/ai-backfill.ts",
+    "notify": "tsx src/jobs/notify.ts"
   },
   "dependencies": {
     "@semiconductor/db": "workspace:*",
-    "rss-parser": "^3.13.0",
-    "openai": "^4.0.0",
+    "dotenv": "^16.0.0",
     "node-cron": "^3.0.0",
-    "dotenv": "^16.0.0"
+    "nodemailer": "^9.0.5",
+    "openai": "^4.0.0",
+    "rss-parser": "^3.13.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/node-cron": "^3.0.0",
+    "@types/nodemailer": "^8.0.1",
     "tsx": "^4.0.0",
     "typescript": "^5.0.0"
   }

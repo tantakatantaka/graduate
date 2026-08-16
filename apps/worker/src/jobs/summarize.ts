@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "../lib/load-env.js";
 import { prisma } from "@semiconductor/db";
 import { generateWeeklySummary } from "../lib/openai.js";
 import { isAiEnabled } from "../lib/ai-config.js";

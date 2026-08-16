@@ -34,7 +34,7 @@ export default async function ArchivePage() {
         <div className="rounded-xl border border-dash-border bg-dash-surface/90 p-12 text-center text-dash-dim">
           <p className="text-lg mb-2">バックナンバーがまだありません</p>
           <p className="text-sm">
-            毎日21:00に自動生成されます。手動で実行するには：
+            毎日6:15に自動生成されます。手動で実行するには：
           </p>
           <code className="mt-2 inline-block bg-dash-panel px-3 py-1 rounded text-sm text-dash-muted border border-dash-border">
             pnpm snapshot

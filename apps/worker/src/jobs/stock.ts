@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "../lib/load-env.js";
 import { prisma } from "@semiconductor/db";
 import { fetchDailyBars } from "../lib/yahoo-finance.js";
 
