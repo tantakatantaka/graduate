@@ -55,9 +55,47 @@ cd apps/worker && pnpm ai-backfill
 |-----------|------|
 | 収集時（毎日5:00） | 企業マッチ／半導体関連記事の要約・カテゴリ・重要度 |
 | スナップショット（毎日6:15） | 「今日のポイント」日次サマリー |
+| メール配信（毎日6:30） | Gmailで要約＋ダッシュボードURLを送信 |
 | 週次（月曜9:00） | 「先週の動向」週次サマリー |
 
 オフにする場合は `apps/worker/.env` で `ENABLE_AI=false` にしてください。
+
+### 定時実行（GitHub Actions・PC不要）
+
+毎朝の収集〜メール配信は **GitHub Actions**（`.github/workflows/daily-worker.yml`）で実行します。
+
+| 日本時間 | 内容 |
+|---------|------|
+| 毎日 5:00〜 | collect → translate → stock → snapshot → notify |
+| 月曜 9:00 | 週次サマリー |
+
+リポジトリの **Settings → Secrets and variables → Actions** に次を登録してください。
+
+`DATABASE_URL` / `DIRECT_URL` / `ENABLE_AI` / `OPENAI_API_KEY` / `DEEPL_API_KEY` / `GMAIL_USER` / `GMAIL_APP_PASSWORD` / `MAIL_TO` / `MAIL_BCC` / `DASHBOARD_URL`
+
+手動実行: Actions タブ → **Daily worker pipeline** → Run workflow
+
+ローカル worker は不要です（止めて問題ありません）。
+
+### Gmail 日次配信
+
+1. Googleアカウントで [2段階認証](https://myaccount.google.com/security) を有効化
+2. [アプリパスワード](https://myaccount.google.com/apppasswords) を発行（メール用）
+3. `apps/worker/.env` に設定:
+
+```bash
+GMAIL_USER="your.name@gmail.com"
+GMAIL_APP_PASSWORD="xxxx xxxx xxxx xxxx"
+MAIL_TO="recipient@example.com"   # 複数はカンマ区切り
+MAIL_BCC="bcc@example.com"        # 任意・複数はカンマ区切り
+DASHBOARD_URL="https://semiconductor-intelligence.vercel.app"
+```
+
+4. テスト送信:
+
+```bash
+cd apps/worker && pnpm notify
+```
 
 ## ディレクトリ構成
 

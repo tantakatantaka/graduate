@@ -1,0 +1,158 @@
+# 毎朝の収集〜メール配信（PC不要）
+#
+# スケジュールは UTC。日本時間との対応:
+#   05:00 JST = 20:00 UTC（前日）
+#   一括実行なので 20:00 UTC 開始で collect→…→notify まで連続実行
+#   週次 summarize は月曜 00:00 UTC = 月曜 09:00 JST
+#
+# 必要な GitHub Secrets（Settings → Secrets and variables → Actions）:
+#   DATABASE_URL, DIRECT_URL
+#   ENABLE_AI, OPENAI_API_KEY
+#   DEEPL_API_KEY
+#   GMAIL_USER, GMAIL_APP_PASSWORD, MAIL_TO
+#   MAIL_BCC（任意）
+#   DASHBOARD_URL
+
+name: Daily worker pipeline
+
+on:
+  schedule:
+    # 毎日 5:00 JST
+    - cron: "0 20 * * *"
+    # 毎週月曜 9:00 JST（週次サマリーのみ別ジョブ）
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+    inputs:
+      run_weekly:
+        description: "週次サマリーも実行する"
+        type: boolean
+        default: false
+
+concurrency:
+  group: daily-worker
+  cancel-in-progress: false
+
+jobs:
+  daily:
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 20 * * *'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.20.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client & build db package
+        run: |
+          pnpm --filter=@semiconductor/db generate
+          pnpm --filter=@semiconductor/db build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+
+      - name: Collect RSS (+ AI summary)
+        working-directory: apps/worker
+        run: pnpm exec tsx src/jobs/collect.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          ENABLE_AI: ${{ secrets.ENABLE_AI }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Translate titles (DeepL)
+        working-directory: apps/worker
+        run: pnpm exec tsx src/jobs/translate.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+
+      - name: Fetch stock prices
+        working-directory: apps/worker
+        run: pnpm exec tsx src/jobs/stock.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+
+      - name: Daily snapshot
+        working-directory: apps/worker
+        run: pnpm exec tsx src/jobs/snapshot.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          ENABLE_AI: ${{ secrets.ENABLE_AI }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          FORCE_SNAPSHOT: "true"
+
+      - name: Email notify (Gmail)
+        working-directory: apps/worker
+        run: pnpm exec tsx src/jobs/notify.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+          MAIL_BCC: ${{ secrets.MAIL_BCC }}
+          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
+
+      - name: Weekly summary (optional on manual)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_weekly }}
+        working-directory: apps/worker
+        run: pnpm exec tsx src/jobs/summarize.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          ENABLE_AI: ${{ secrets.ENABLE_AI }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+  weekly:
+    if: github.event_name == 'schedule' && github.event.schedule == '0 0 * * 1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.20.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client & build db package
+        run: |
+          pnpm --filter=@semiconductor/db generate
+          pnpm --filter=@semiconductor/db build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+
+      - name: Weekly summary
+        working-directory: apps/worker
+        run: pnpm exec tsx src/jobs/summarize.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          ENABLE_AI: ${{ secrets.ENABLE_AI }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
