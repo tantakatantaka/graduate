@@ -1,4 +1,4 @@
-/** 業界ニュースの優先度スコアリング（ルールベース） */
+/** 業界ニュースの優先度スコアリング（apps/web/lib/rank-articles.ts と同一基準） */
 
 const MAIN_TICKERS = new Set(["AMAT"]);
 
@@ -17,28 +17,26 @@ const SOURCE_SCORE: Record<string, number> = {
   "Semiconductor Digest": 13,
   "PC Watch": 12,
   日経ビジネス: 10,
-  // 収集対象外の旧ソースは表示優先度を下げる
   "Tom's Hardware": -40,
   "EE Times Japan": -20,
 };
+
+/** 専門ソース（フィード自体が半導体寄り） */
+const SPECIALTY_SOURCES = new Set([
+  "EE Times",
+  "SemiEngineering",
+  "DIGITIMES",
+  "Semiconductor Digest",
+]);
 
 export type RankableArticle = {
   title: string;
   publishedAt: Date;
   source: string;
   importance: string | null;
-  companies: { ticker: string; name: string }[];
+  companies: { ticker: string; name?: string }[];
 };
 
-/**
- * スコア内訳:
- * - 顧客企業(AMAT)マッチ: +100
- * - エンドユーザー企業マッチ: +40 × 社数（上限120）
- * - 重要キーワード: 各 +10〜20
- * - 鮮度: 最大 +30（本日）〜 0（14日超）
- * - ソース信頼度: +2〜14
- * - importance(high/medium): +20 / +8（AI利用時）
- */
 export function scoreArticle(article: RankableArticle): number {
   let score = 0;
   const tickers = article.companies.map((c) => c.ticker);
@@ -70,48 +68,12 @@ export function scoreArticle(article: RankableArticle): number {
   return score;
 }
 
-const SPECIALTY_SOURCES = new Set([
-  "EE Times",
-  "SemiEngineering",
-  "DIGITIMES",
-  "Semiconductor Digest",
-]);
-
-/**
- * 鮮度だけで日経ビジネス等の一般記事が上位に来るのを防ぐ
- *（企業マッチ／半導体キーワード／専門ソース+重要度）
- */
-export function isIndustryRelevant(article: {
-  title: string;
-  source: string;
-  importance: string | null;
-  companies: { ticker: string }[];
-}): boolean {
-  if (article.companies.length > 0) return true;
-  if (
-    /(半導体|semiconductor|hbm|euv|foundry|fab|wafer|nand|dram|チップ|chip\b|tsmc|applied\s*materials|micron|kioxia|rapidus|nvidia|intel|samsung)/i.test(
-      article.title
-    )
-  ) {
-    return true;
-  }
-  if (
-    SPECIALTY_SOURCES.has(article.source) &&
-    (article.importance === "high" || article.importance === "medium")
-  ) {
-    return true;
-  }
-  return false;
-}
-
-/** スコア降順で並べ、上位 limit 件を返す（最低スコア未満・非関連は除外） */
 export function rankArticles<T extends RankableArticle>(
   articles: T[],
   limit = 10,
   minScore = 20
 ): T[] {
   return [...articles]
-    .filter(isIndustryRelevant)
     .map((a) => ({ article: a, score: scoreArticle(a) }))
     .filter(({ score }) => score >= minScore)
     .sort((a, b) => {
@@ -123,4 +85,34 @@ export function rankArticles<T extends RankableArticle>(
     })
     .slice(0, limit)
     .map(({ article }) => article);
+}
+
+/**
+ * メール／スナップショット用: 半導体関連として載せる価値があるか
+ * （鮮度だけで日経ビジネス一般記事が上位に来るのを防ぐ）
+ */
+export function isIndustryRelevant(article: {
+  title: string;
+  source: string;
+  importance: string | null;
+  companies: { ticker: string }[];
+}): boolean {
+  if (article.companies.length > 0) return true;
+
+  if (
+    /(半導体|semiconductor|hbm|euv|foundry|fab|wafer|nand|dram|チップ|chip\b|tsmc|applied\s*materials|micron|kioxia|rapidus|nvidia|intel|samsung)/i.test(
+      article.title
+    )
+  ) {
+    return true;
+  }
+
+  if (
+    SPECIALTY_SOURCES.has(article.source) &&
+    (article.importance === "high" || article.importance === "medium")
+  ) {
+    return true;
+  }
+
+  return false;
 }
