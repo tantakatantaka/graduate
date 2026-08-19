@@ -53,21 +53,22 @@ cd apps/worker && pnpm ai-backfill
 
 | タイミング | 内容 |
 |-----------|------|
-| 収集時（毎日5:00） | 企業マッチ／半導体関連記事の要約・カテゴリ・重要度 |
-| スナップショット（毎日6:15） | 「今日のポイント」日次サマリー |
-| メール配信（毎日6:30） | Gmailで要約＋ダッシュボードURLを送信 |
+| 収集時（月〜金 5:00） | 企業マッチ／半導体関連記事の要約・カテゴリ・重要度 |
+| スナップショット（月〜金 6:15） | 「今日のポイント」日次サマリー |
+| メール配信（月〜金 6:30） | Gmailで要約＋ダッシュボードURLを送信（土日なし） |
 | 週次（月曜9:00） | 「先週の動向」週次サマリー |
 
 オフにする場合は `apps/worker/.env` で `ENABLE_AI=false` にしてください。
 
 ### 定時実行（GitHub Actions・PC不要）
 
-毎朝の収集〜メール配信は **GitHub Actions**（`.github/workflows/daily-worker.yml`）で実行します。
+平日の収集〜メール配信は **GitHub Actions**（`.github/workflows/daily-worker.yml`）で実行します。**土日は配信しません。**
 
 | 日本時間 | 内容 |
 |---------|------|
-| 毎日 5:00〜 | collect → translate → stock → snapshot → notify |
+| 月〜金 5:00〜 | collect → translate → stock → snapshot → notify |
 | 月曜 9:00 | 週次サマリー |
+| 土・日 | 配信なし |
 
 リポジトリの **Settings → Secrets and variables → Actions** に次を登録してください。
 

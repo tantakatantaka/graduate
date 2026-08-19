@@ -46,24 +46,24 @@ requireEnv([
 ]);
 console.log(`🤖 AI要約: ${process.env.ENABLE_AI === "true" ? "ON" : "OFF"}`);
 
-// 毎日 5:00 にRSS収集
-cron.schedule("0 5 * * *", () => run("RSS収集ジョブ実行", "collect"), { timezone: TZ });
+// 月〜金 5:00 にRSS収集（土日なし）
+cron.schedule("0 5 * * 1-5", () => run("RSS収集ジョブ実行", "collect"), { timezone: TZ });
 
-// 毎日 5:30 に上位記事をDeepLで日本語翻訳
-cron.schedule("30 5 * * *", () => run("日本語翻訳ジョブ実行", "translate"), {
+// 月〜金 5:30 に上位記事をDeepLで日本語翻訳
+cron.schedule("30 5 * * 1-5", () => run("日本語翻訳ジョブ実行", "translate"), {
   timezone: TZ,
 });
 
-// 毎日 6:00 に株価取得（米市場終値反映は翌日朝）
-cron.schedule("0 6 * * *", () => run("株価取得ジョブ実行", "stock"), { timezone: TZ });
+// 月〜金 6:00 に株価取得（米市場終値反映は翌日朝）
+cron.schedule("0 6 * * 1-5", () => run("株価取得ジョブ実行", "stock"), { timezone: TZ });
 
-// 毎日 6:15 に日次スナップショット生成
-cron.schedule("15 6 * * *", () => run("日次スナップショット生成ジョブ実行", "snapshot"), {
+// 月〜金 6:15 に日次スナップショット生成
+cron.schedule("15 6 * * 1-5", () => run("日次スナップショット生成ジョブ実行", "snapshot"), {
   timezone: TZ,
 });
 
-// 毎日 6:30 にGmailで日次配信
-cron.schedule("30 6 * * *", () => run("日次メール配信ジョブ実行", "notify"), {
+// 月〜金 6:30 にGmailで日次配信（土日は配信なし）
+cron.schedule("30 6 * * 1-5", () => run("日次メール配信ジョブ実行", "notify"), {
   timezone: TZ,
 });
 
@@ -72,6 +72,6 @@ cron.schedule("0 9 * * 1", () => run("週次サマリー生成ジョブ実行", 
   timezone: TZ,
 });
 
-console.log("⏳ スケジュール登録完了（Asia/Tokyo）。明日から定時実行します。");
+console.log("⏳ スケジュール登録完了（Asia/Tokyo・月〜金配信）。");
 console.log("   5:00 collect → 5:30 translate → 6:00 stock → 6:15 snapshot → 6:30 notify");
-console.log("   ※ このPCの電源と worker プロセスを朝まで維持してください");
+console.log("   ※ 土日は配信なし。ローカル運用時はこのPCの電源維持が必要");

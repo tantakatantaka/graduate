@@ -1,8 +1,9 @@
-# 毎朝の収集〜メール配信（PC不要）
+# 平日の収集〜メール配信（PC不要 / 土日は配信なし）
 #
 # スケジュールは UTC。日本時間との対応:
 #   05:00 JST = 20:00 UTC（前日）
-#   一括実行なので 20:00 UTC 開始で collect→…→notify まで連続実行
+#   月〜金 5:00 JST = 日〜木 20:00 UTC → cron "0 20 * * 0-4"
+#   （UTCの月〜金だと JST では火〜土になるので注意）
 #   週次 summarize は月曜 00:00 UTC = 月曜 09:00 JST
 #
 # 必要な GitHub Secrets（Settings → Secrets and variables → Actions）:
@@ -17,8 +18,8 @@ name: Daily worker pipeline
 
 on:
   schedule:
-    # 毎日 5:00 JST
-    - cron: "0 20 * * *"
+    # 月〜金 5:00 JST（土日は配信なし）
+    - cron: "0 20 * * 0-4"
     # 毎週月曜 9:00 JST（週次サマリーのみ別ジョブ）
     - cron: "0 0 * * 1"
   workflow_dispatch:
@@ -34,7 +35,7 @@ concurrency:
 
 jobs:
   daily:
-    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 20 * * *'
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 20 * * 0-4'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     defaults:
