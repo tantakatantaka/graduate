@@ -57,6 +57,11 @@ export const RSS_SOURCES = [
     lang: "ja",
   },
   {
+    name: "日経クロステック",
+    url: "https://xtech.nikkei.com/rss/index.rdf",
+    lang: "ja",
+  },
+  {
     name: "日経ビジネス",
     url: "https://business.nikkei.com/rss/sns/nb.rdf",
     lang: "ja",

@@ -21,6 +21,7 @@ const SOURCE_SCORE: Record<string, number> = {
   "SEMI News": 13,
   "SEAJ News": 13,
   "PC Watch": 12,
+  日経クロステック: 12,
   日経ビジネス: 10,
   "Tom's Hardware": -40,
 };
