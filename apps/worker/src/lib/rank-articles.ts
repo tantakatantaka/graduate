@@ -7,7 +7,7 @@ const PRIORITY_KEYWORDS: { pattern: RegExp; score: number }[] = [
   { pattern: /(決算|earnings|revenue|ガイダンス)/i, score: 18 },
   { pattern: /(工場|fab|foundry|量産|着工|補助金|規制|export\s*control)/i, score: 16 },
   { pattern: /(合併|買収|m&a|出資|提携)/i, score: 14 },
-  { pattern: /(半導体|semiconductor|chip|wafer|nand|dram)/i, score: 10 },
+  { pattern: /(半導体|semiconductor|chip|wafer|nand|dram|dxi|hbm)/i, score: 10 },
 ];
 
 const SOURCE_SCORE: Record<string, number> = {
@@ -17,6 +17,7 @@ const SOURCE_SCORE: Record<string, number> = {
   DIGITIMES: 14,
   "Semiconductor Digest": 13,
   TrendForce: 14,
+  DRAMeXchange: 15,
   "SEMI News": 13,
   "SEAJ News": 13,
   "PC Watch": 12,
@@ -32,6 +33,7 @@ const SPECIALTY_SOURCES = new Set([
   "DIGITIMES",
   "Semiconductor Digest",
   "TrendForce",
+  "DRAMeXchange",
   "SEMI News",
   "SEAJ News",
 ]);

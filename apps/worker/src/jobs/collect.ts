@@ -74,23 +74,40 @@ async function collectFromSource(source: (typeof RSS_SOURCES)[number]) {
   }
 
   let newCount = 0;
+  const feedBase = feed.link || source.url;
+
   for (const item of feed.items) {
     if (!item.title || !item.link) continue;
 
+    let url: string;
+    try {
+      url = new URL(item.link, feedBase).toString();
+    } catch {
+      continue;
+    }
+
     const existingArticle = await prisma.article.findUnique({
-      where: { url: item.link },
+      where: { url },
     });
     if (existingArticle) continue;
 
-    const matchedTickers = matchCompanies(
-      `${item.title} ${item.contentSnippet ?? ""}`
+    // DRAMeXchange の DXI など、タイトルが記号だけの場合は本文先頭で補完
+    let title = item.title.trim();
+    const snippet = (item.contentSnippet ?? item.content ?? "").replace(
+      /<[^>]+>/g,
+      " "
     );
+    if (title.length <= 4 && snippet.trim()) {
+      title = `${title}: ${snippet.trim().slice(0, 80)}`;
+    }
 
-    let summary: string | null = item.contentSnippet?.slice(0, 120) ?? null;
+    const matchedTickers = matchCompanies(`${title} ${snippet}`);
+
+    let summary: string | null = snippet.slice(0, 120) || null;
     let category = "その他";
     let importance = matchedTickers.length > 0 ? "medium" : "low";
 
-    const textForAi = `${item.title} ${item.contentSnippet ?? ""}`;
+    const textForAi = `${title} ${snippet}`;
     const shouldAi =
       isAiEnabled() &&
       (matchedTickers.length > 0 || isSemiconductorRelevant(textForAi));
@@ -98,15 +115,12 @@ async function collectFromSource(source: (typeof RSS_SOURCES)[number]) {
     // ENABLE_AI=true のとき、企業マッチまたは半導体関連記事を要約・分類
     if (shouldAi) {
       try {
-        const result = await summarizeArticle(
-          item.title,
-          item.contentSnippet ?? ""
-        );
+        const result = await summarizeArticle(title, snippet);
         summary = result.summary;
         category = result.category;
         importance = result.importance;
       } catch (e) {
-        console.error(`⚠️ AI要約失敗: ${item.title}`, e);
+        console.error(`⚠️ AI要約失敗: ${title}`, e);
       }
     }
 
@@ -116,8 +130,8 @@ async function collectFromSource(source: (typeof RSS_SOURCES)[number]) {
 
     await prisma.article.create({
       data: {
-        title: item.title,
-        url: item.link,
+        title,
+        url,
         summary,
         category,
         importance,
@@ -131,7 +145,7 @@ async function collectFromSource(source: (typeof RSS_SOURCES)[number]) {
     });
 
     newCount++;
-    console.log(`  ✓ ${item.title.slice(0, 60)}... [${matchedTickers.join(",")}]`);
+    console.log(`  ✓ ${title.slice(0, 60)}... [${matchedTickers.join(",")}]`);
   }
 
   console.log(`✅ ${source.name}: ${newCount}件追加`);

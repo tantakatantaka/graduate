@@ -7,7 +7,7 @@ export function isAiEnabled(): boolean {
 
 /** 企業マッチがなくてもAI要約する半導体関連判定 */
 export function isSemiconductorRelevant(text: string): boolean {
-  return /(半導体|semiconductor|hbm|euv|foundry|fab|wafer|nand|dram|チップ|chip\b|tsmc|applied\s*materials|micron|kioxia|rapidus)/i.test(
+  return /(半導体|semiconductor|hbm|euv|foundry|fab|wafer|nand|dram|dxi|チップ|chip\b|tsmc|applied\s*materials|micron|kioxia|rapidus)/i.test(
     text
   );
 }

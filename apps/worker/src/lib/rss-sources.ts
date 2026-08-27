@@ -27,14 +27,22 @@ export const RSS_SOURCES = [
   },
   {
     name: "TrendForce",
-    // メモリ価格・需給を含む業界ニュース（公式RSS）
+    // メモリ／装置など業界ニュース（公式RSS）
     url: "https://www.trendforce.com/news/feed_v2/",
     lang: "en",
   },
   {
+    name: "DRAMeXchange",
+    // TrendForce傘下。DXI（DRAMスポット）日次コメント＋メモリ需給レポート
+    // ※詳細スポット価格表自体は有料会員向け
+    url: "https://www.dramexchange.com/WeeklyResearch/RSS",
+    lang: "en",
+  },
+  {
     name: "SEMI News",
-    // 公式RSSなし → SEMI発表の装置投資・ファブ動向報道を Google News 経由で収集
-    url: "https://news.google.com/rss/search?q=%22SEMI%20Reports%22%20OR%20%22SEMI%20forecasts%22%20semiconductor%20equipment&hl=en-US&gl=US&ceid=US:en",
+    // SEMI Market Intelligence 本体（EMDS等）は有料・RSSなし。
+    // 公開される装置 billings / fab forecast のプレス報道を Google News 経由で収集。
+    url: "https://news.google.com/rss/search?q=%22SEMI%20Reports%22%20OR%20%22SEMI%20forecasts%22%20OR%20WWSEMS%20semiconductor%20equipment&hl=en-US&gl=US&ceid=US:en",
     lang: "en",
   },
   {
