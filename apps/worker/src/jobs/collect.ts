@@ -39,6 +39,37 @@ async function fetchFeed(url: string) {
   }
 }
 
+/** DRAMeXchange の「2026/8/27 下午 06:00:00」形式にも対応 */
+function parsePubDate(raw?: string | null): Date {
+  if (!raw?.trim()) return new Date();
+  const direct = new Date(raw);
+  if (!Number.isNaN(direct.getTime())) return direct;
+
+  // 例: 2026/8/27 下午 06:00:00 / 上午 = AM, 下午 = PM
+  const m = raw
+    .trim()
+    .match(
+      /^(\d{4})\/(\d{1,2})\/(\d{1,2})\s*(上午|下午|AM|PM)?\s*(\d{1,2}):(\d{2})(?::(\d{2}))?/i
+    );
+  if (m) {
+    let hour = Number(m[5]);
+    const minute = Number(m[6]);
+    const second = Number(m[7] ?? "0");
+    const ampm = (m[4] ?? "").toLowerCase();
+    if (ampm === "下午" || ampm === "pm") {
+      if (hour < 12) hour += 12;
+    } else if (ampm === "上午" || ampm === "am") {
+      if (hour === 12) hour = 0;
+    }
+    // 台湾時間 (GMT+8) として解釈
+    const iso = `${m[1]}-${String(m[2]).padStart(2, "0")}-${String(m[3]).padStart(2, "0")}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:${String(second).padStart(2, "0")}+08:00`;
+    const parsed = new Date(iso);
+    if (!Number.isNaN(parsed.getTime())) return parsed;
+  }
+
+  return new Date();
+}
+
 async function ensureCompaniesExist() {
   for (const company of COMPANIES) {
     await prisma.company.upsert({
@@ -128,6 +159,8 @@ async function collectFromSource(source: (typeof RSS_SOURCES)[number]) {
       where: { ticker: { in: matchedTickers } },
     });
 
+    let publishedAt = parsePubDate(item.isoDate || item.pubDate);
+
     await prisma.article.create({
       data: {
         title,
@@ -135,7 +168,7 @@ async function collectFromSource(source: (typeof RSS_SOURCES)[number]) {
         summary,
         category,
         importance,
-        publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
+        publishedAt,
         source: source.name,
         sourceUrl: source.url,
         companies: {
