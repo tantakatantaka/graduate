@@ -7,13 +7,16 @@ import { looksJapanese, translateToJa } from "../lib/deepl.js";
  */
 const SOURCE_SCORE: Record<string, number> = {
   "EE Times": 12,
+  "EE Times Japan": 12,
   SemiEngineering: 12,
   DIGITIMES: 14,
   "Semiconductor Digest": 13,
+  TrendForce: 14,
+  "SEMI News": 13,
+  "SEAJ News": 13,
   "PC Watch": 12,
   日経ビジネス: 10,
   "Tom's Hardware": -40,
-  "EE Times Japan": -20,
 };
 
 const PRIORITY_KEYWORDS: { pattern: RegExp; score: number }[] = [

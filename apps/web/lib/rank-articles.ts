@@ -12,14 +12,16 @@ const PRIORITY_KEYWORDS: { pattern: RegExp; score: number }[] = [
 
 const SOURCE_SCORE: Record<string, number> = {
   "EE Times": 12,
+  "EE Times Japan": 12,
   SemiEngineering: 12,
   DIGITIMES: 14,
   "Semiconductor Digest": 13,
+  TrendForce: 14,
+  "SEMI News": 13,
+  "SEAJ News": 13,
   "PC Watch": 12,
   日経ビジネス: 10,
-  // 収集対象外の旧ソースは表示優先度を下げる
   "Tom's Hardware": -40,
-  "EE Times Japan": -20,
 };
 
 export type RankableArticle = {
@@ -72,9 +74,13 @@ export function scoreArticle(article: RankableArticle): number {
 
 const SPECIALTY_SOURCES = new Set([
   "EE Times",
+  "EE Times Japan",
   "SemiEngineering",
   "DIGITIMES",
   "Semiconductor Digest",
+  "TrendForce",
+  "SEMI News",
+  "SEAJ News",
 ]);
 
 /**

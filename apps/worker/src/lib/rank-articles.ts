@@ -12,21 +12,28 @@ const PRIORITY_KEYWORDS: { pattern: RegExp; score: number }[] = [
 
 const SOURCE_SCORE: Record<string, number> = {
   "EE Times": 12,
+  "EE Times Japan": 12,
   SemiEngineering: 12,
   DIGITIMES: 14,
   "Semiconductor Digest": 13,
+  TrendForce: 14,
+  "SEMI News": 13,
+  "SEAJ News": 13,
   "PC Watch": 12,
   日経ビジネス: 10,
   "Tom's Hardware": -40,
-  "EE Times Japan": -20,
 };
 
 /** 専門ソース（フィード自体が半導体寄り） */
 const SPECIALTY_SOURCES = new Set([
   "EE Times",
+  "EE Times Japan",
   "SemiEngineering",
   "DIGITIMES",
   "Semiconductor Digest",
+  "TrendForce",
+  "SEMI News",
+  "SEAJ News",
 ]);
 
 export type RankableArticle = {
