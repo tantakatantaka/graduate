@@ -84,5 +84,7 @@ model DailySnapshot {
   articleCount Int   @default(0)
   // その日の注目記事トップ5（タイトル・URL・カテゴリ）をJSONで保存
   topArticles  Json
+  // 日次メール送信済み時刻（同日再送防止）
+  emailSentAt DateTime?
   createdAt DateTime @default(now())
 }

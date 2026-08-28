@@ -6,6 +6,9 @@ const DASHBOARD_URL =
   process.env.DASHBOARD_URL?.trim() ||
   "https://semiconductor-intelligence.vercel.app";
 
+/** GitHub Actions の遅延で昼配信にならないよう、午前のみ送信（手動は ALLOW_LATE_NOTIFY=true） */
+const MORNING_CUTOFF_HOUR_JST = 10;
+
 function escapeHtml(s: string) {
   return s
     .replace(/&/g, "&amp;")
@@ -14,17 +17,94 @@ function escapeHtml(s: string) {
     .replace(/"/g, "&quot;");
 }
 
+function getJstHour(now = new Date()): number {
+  const hour = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Tokyo",
+    hour: "numeric",
+    hour12: false,
+  }).format(now);
+  return Number(hour);
+}
+
+function getJstDateKey(now = new Date()): Date {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const y = parts.find((p) => p.type === "year")!.value;
+  const m = parts.find((p) => p.type === "month")!.value;
+  const d = parts.find((p) => p.type === "day")!.value;
+  return new Date(`${y}-${m}-${d}T00:00:00.000Z`);
+}
+
 async function main() {
   console.log("📧 日次メール配信開始:", new Date().toLocaleString("ja-JP"));
 
-  const daily = await prisma.dailySnapshot.findFirst({
-    orderBy: { date: "desc" },
-    select: { summary: true, date: true, articleCount: true, topArticles: true },
+  const allowLate = process.env.ALLOW_LATE_NOTIFY === "true";
+  const jstHour = getJstHour();
+  if (!allowLate && jstHour >= MORNING_CUTOFF_HOUR_JST) {
+    console.log(
+      `⏭ JST ${jstHour}時台のため配信スキップ（朝 ${MORNING_CUTOFF_HOUR_JST}時前のみ）。手動なら ALLOW_LATE_NOTIFY=true`
+    );
+    await prisma.$disconnect();
+    return;
+  }
+
+  const dateKey = getJstDateKey();
+  const daily = await prisma.dailySnapshot.findUnique({
+    where: { date: dateKey },
+    select: {
+      id: true,
+      summary: true,
+      date: true,
+      articleCount: true,
+      topArticles: true,
+      emailSentAt: true,
+    },
   });
 
   if (!daily) {
-    console.log("⚠️ 日次スナップショットがありません。先に pnpm snapshot を実行してください");
-    process.exit(1);
+    // 日付キー不一致のフォールバック（既存データ）
+    const latest = await prisma.dailySnapshot.findFirst({
+      orderBy: { date: "desc" },
+      select: {
+        id: true,
+        summary: true,
+        date: true,
+        articleCount: true,
+        topArticles: true,
+        emailSentAt: true,
+      },
+    });
+    if (!latest) {
+      console.log(
+        "⚠️ 日次スナップショットがありません。先に pnpm snapshot を実行してください"
+      );
+      process.exit(1);
+    }
+    await sendForSnapshot(latest);
+    return;
+  }
+
+  await sendForSnapshot(daily);
+}
+
+async function sendForSnapshot(daily: {
+  id: string;
+  summary: string;
+  date: Date;
+  articleCount: number;
+  topArticles: unknown;
+  emailSentAt: Date | null;
+}) {
+  if (daily.emailSentAt && process.env.FORCE_NOTIFY !== "true") {
+    console.log(
+      `⏭ 本日分は送信済み (${daily.emailSentAt.toLocaleString("ja-JP")})。再送は FORCE_NOTIFY=true`
+    );
+    await prisma.$disconnect();
+    return;
   }
 
   const dateLabel = new Date(daily.date).toLocaleDateString("ja-JP", {
@@ -33,11 +113,12 @@ async function main() {
     day: "numeric",
   });
 
-  const topArticles = (daily.topArticles as {
-    title?: string;
-    url?: string;
-    category?: string | null;
-  }[]) ?? [];
+  const topArticles =
+    (daily.topArticles as {
+      title?: string;
+      url?: string;
+      category?: string | null;
+    }[]) ?? [];
 
   const articleLines = topArticles.slice(0, 5).map((a, i) => {
     const title = a.title ?? "(無題)";
@@ -105,6 +186,10 @@ async function main() {
 </html>`.trim();
 
   const info = await sendMail({ subject, text, html });
+  await prisma.dailySnapshot.update({
+    where: { id: daily.id },
+    data: { emailSentAt: new Date() },
+  });
   console.log("✅ 送信完了:", info.messageId);
   await prisma.$disconnect();
 }
