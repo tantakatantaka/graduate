@@ -1,3 +1,8 @@
+import {
+  anonymizeText,
+  displayTicker,
+} from "@/lib/anonymize-companies";
+
 const CATEGORY_COLORS: Record<string, string> = {
   決算: "bg-amber-500/15 text-amber-300 border-amber-500/30",
   技術: "bg-sky-500/15 text-sky-300 border-sky-500/30",
@@ -70,16 +75,16 @@ export default function ArticleFeed({ articles }: { articles: Article[] }) {
                     key={c.ticker}
                     className="chip-news text-[12px] px-1.5 py-0.5 rounded font-mono"
                   >
-                    {c.ticker}
+                    {displayTicker(c.ticker)}
                   </span>
                 ))}
               </div>
               <p className="text-sm text-dash-text/90 group-hover:text-white transition-colors font-medium line-clamp-2">
-                {article.titleJa || article.title}
+                {anonymizeText(article.titleJa || article.title)}
               </p>
               {article.summary && (
                 <p className="text-xs text-dash-dim mt-0.5 line-clamp-1">
-                  {article.summary}
+                  {anonymizeText(article.summary)}
                 </p>
               )}
             </div>

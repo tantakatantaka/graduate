@@ -1,4 +1,11 @@
 import { Prisma } from "@prisma/client";
+import {
+  anonymizeText,
+  displayCompanyName,
+  displayCompanyNameJa,
+  displayTicker,
+  shouldAnonymizeCompanies,
+} from "@/lib/anonymize-companies";
 
 type CompanyWithRelations = Prisma.CompanyGetPayload<{
   include: {
@@ -53,10 +60,11 @@ export default function CompanyCard({
   /** 顧客=teal / エンドユーザー=amber */
   tone?: "customer" | "enduser" | "neutral";
 }) {
-  const newsUrl =
-    NEWS_URL_BY_TICKER[company.ticker] ??
-    (company as { newsUrl?: string | null }).newsUrl ??
-    null;
+  const newsUrl = shouldAnonymizeCompanies()
+    ? null
+    : (NEWS_URL_BY_TICKER[company.ticker] ??
+      (company as { newsUrl?: string | null }).newsUrl ??
+      null);
   const latestStock = company.stockData[0];
   const previousStock = company.stockData[1];
   const changePercent =
@@ -99,15 +107,21 @@ export default function CompanyCard({
             </span>
           )}
           <div>
-            <p className="text-sm text-dash-dim font-mono">{company.ticker}</p>
+            <p className="text-sm text-dash-dim font-mono">
+              {displayTicker(company.ticker)}
+            </p>
             <h3 className={`font-semibold text-white ${isMain ? "text-xl" : "text-lg"}`}>
-              {company.name}
+              {displayCompanyName(company.ticker, company.name)}
             </h3>
-            {company.nameJa && (
-              <p className="text-sm text-dash-muted">{company.nameJa}</p>
+            {displayCompanyNameJa(company.ticker, company.nameJa) && (
+              <p className="text-sm text-dash-muted">
+                {displayCompanyNameJa(company.ticker, company.nameJa)}
+              </p>
             )}
             {isMain && company.description && (
-              <p className="text-sm text-dash-dim mt-0.5">{company.description}</p>
+              <p className="text-sm text-dash-dim mt-0.5">
+                {anonymizeText(company.description)}
+              </p>
             )}
           </div>
         </div>
@@ -164,11 +178,11 @@ export default function CompanyCard({
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="text-sm text-dash-muted group-hover:text-dash-text transition-colors line-clamp-2 leading-relaxed">
-                    {ac.article.titleJa || ac.article.title}
+                    {anonymizeText(ac.article.titleJa || ac.article.title)}
                   </p>
                   {isMain && ac.article.summary && (
                     <p className="text-sm text-dash-dim line-clamp-1 mt-0.5 hidden sm:block">
-                      {ac.article.summary}
+                      {anonymizeText(ac.article.summary)}
                     </p>
                   )}
                 </div>

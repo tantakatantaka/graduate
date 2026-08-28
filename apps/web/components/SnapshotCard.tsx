@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import { DailySnapshot } from "@prisma/client";
+import {
+  anonymizeText,
+  displayCompanyName,
+  displayTicker,
+} from "@/lib/anonymize-companies";
 
 type CompanySnapshot = {
   ticker: string;
@@ -70,7 +75,7 @@ export default function SnapshotCard({ snapshot }: { snapshot: DailySnapshot }) 
                 key={c.ticker}
                 className="text-[12px] px-2 py-0.5 rounded-full bg-dash-panel text-dash-muted font-mono border border-dash-border"
               >
-                {c.ticker} {c.articleCount}件
+                {displayTicker(c.ticker)} {c.articleCount}件
               </span>
             ))}
           </div>
@@ -87,7 +92,7 @@ export default function SnapshotCard({ snapshot }: { snapshot: DailySnapshot }) 
               本日のサマリー
             </p>
             <p className="text-sm text-dash-muted leading-relaxed">
-              {snapshot.summary}
+              {anonymizeText(snapshot.summary)}
             </p>
           </div>
 
@@ -117,7 +122,7 @@ export default function SnapshotCard({ snapshot }: { snapshot: DailySnapshot }) 
                         </span>
                       )}
                       <p className="text-sm text-dash-muted group-hover:text-dash-text transition-colors line-clamp-1">
-                        {article.title}
+                        {anonymizeText(article.title)}
                       </p>
                     </div>
                   </a>
@@ -137,9 +142,11 @@ export default function SnapshotCard({ snapshot }: { snapshot: DailySnapshot }) 
                   className="rounded-lg bg-dash-panel/80 border border-dash-border/60 p-2"
                 >
                   <p className="text-[12px] font-mono text-dash-dim">
-                    {c.ticker}
+                    {displayTicker(c.ticker)}
                   </p>
-                  <p className="text-xs text-dash-muted font-medium">{c.name}</p>
+                  <p className="text-xs text-dash-muted font-medium">
+                    {displayCompanyName(c.ticker, c.name)}
+                  </p>
                   <div className="mt-1 flex items-center justify-between">
                     <span className="text-[12px] text-dash-dim">
                       {c.articleCount}件

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { WeeklySummary } from "@prisma/client";
+import { anonymizeText } from "@/lib/anonymize-companies";
 
 type DailyInfo = {
   summary: string;
@@ -51,7 +52,7 @@ export default function WeeklySummaryBanner({ daily, weekly }: Props) {
               !dailyExpanded ? "line-clamp-2" : ""
             }`}
           >
-            {daily.summary}
+            {anonymizeText(daily.summary)}
           </p>
         </div>
       )}
@@ -80,7 +81,7 @@ export default function WeeklySummaryBanner({ daily, weekly }: Props) {
               !weeklyExpanded ? "line-clamp-2" : ""
             }`}
           >
-            {weekly.content}
+            {anonymizeText(weekly.content)}
           </p>
         </div>
       )}
