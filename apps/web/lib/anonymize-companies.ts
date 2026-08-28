@@ -13,6 +13,7 @@ const ALIAS_BY_TICKER: Record<string, string> = {
   MU: "M社",
   TSM: "T社",
   "SONY-SC": "S社",
+  RAPIDUS: "R社",
 };
 
 /** 本文中の社名置換（長い表記から） */
@@ -35,6 +36,9 @@ const TEXT_REPLACEMENTS: { pattern: RegExp; alias: string }[] = [
   },
   { pattern: /Sony\s*Semiconductor(?:\s*Solutions)?/gi, alias: "S社" },
   { pattern: /ソニーセミコン/g, alias: "S社" },
+  { pattern: /ラピダス/g, alias: "R社" },
+  { pattern: /Rapidus/gi, alias: "R社" },
+  { pattern: /\bRAPIDUS\b/g, alias: "R社" },
 ];
 
 export function shouldAnonymizeCompanies(): boolean {
