@@ -111,6 +111,8 @@ jobs:
           MAIL_TO: ${{ secrets.MAIL_TO }}
           MAIL_BCC: ${{ secrets.MAIL_BCC }}
           DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
+          # 手動実行は何時でも可。定時は notify 内で午前のみ
+          ALLOW_LATE_NOTIFY: ${{ github.event_name == 'workflow_dispatch' && 'true' || '' }}
 
       - name: Weekly summary (optional on manual)
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_weekly }}
