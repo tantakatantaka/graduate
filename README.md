@@ -66,9 +66,12 @@ cd apps/worker && pnpm ai-backfill
 
 | 日本時間 | 内容 |
 |---------|------|
-| 月〜金 早朝〜朝 | collect → … → notify（GitHub遅延対策で複数枠。午前10時以降のメールは送らない） |
+| 月〜金 **5:00** | 本起動: collect → translate → stock → snapshot → notify |
+| 月〜金 **7:00** | バックアップ起動（未送信ならメール。同日2通目は送らない） |
 | 月曜 9:00 | 週次サマリー |
 | 土・日 | 配信なし |
+
+※ GitHub Actions の遅延で **JST 10時以降** になった場合、メールのみスキップします。
 
 リポジトリの **Settings → Secrets and variables → Actions** に次を登録してください。
 
